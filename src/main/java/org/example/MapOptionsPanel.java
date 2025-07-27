@@ -1,8 +1,11 @@
 package org.example;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 public class MapOptionsPanel extends JPanel {
     // Labels
@@ -63,7 +66,7 @@ public class MapOptionsPanel extends JPanel {
 
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS));
-        formPanel.add(headerPanel); // ← this replaces adding labels directly
+        formPanel.add(headerPanel);
         formPanel.add(Box.createVerticalStrut(10));
         formPanel.add(checkboxGrid);
         formPanel.add(Box.createVerticalStrut(10));
@@ -124,15 +127,29 @@ public class MapOptionsPanel extends JPanel {
     public String getSelectedUnitDefinition() {
         return (String) unitDefinitionSelect.getSelectedItem();
     }
-
-    public void setPreviewImage(ImageIcon imageIcon) {
-        if (imageIcon != null) {
-            currentImage = new ImageIcon(imageIcon.getImage().getScaledInstance(previewSize, previewSize, Image.SCALE_SMOOTH));
-        } else {
+    public void setPreviewImage(byte[] imageBytes) {
+        try {
+            if (imageBytes != null && imageBytes.length > 0) {
+                ByteArrayInputStream bais = new ByteArrayInputStream(imageBytes);
+                BufferedImage image = ImageIO.read(bais);
+                if (image != null) {
+                    Image scaled = image.getScaledInstance(previewSize, previewSize, Image.SCALE_SMOOTH);
+                    currentImage = new ImageIcon(scaled);
+                } else {
+                    currentImage = generateFallbackImage();
+                }
+            } else {
+                currentImage = generateFallbackImage();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
             currentImage = generateFallbackImage();
         }
         imageLabel.setIcon(currentImage);
     }
+
+
+
 
     private ImageIcon generateFallbackImage() {
         int size = previewSize;

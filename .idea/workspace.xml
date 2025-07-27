@@ -4,7 +4,44 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0aee85d3-d351-4a19-b215-12b2fd7da4c2" name="Changes" comment="" />
+    <list default="true" id="0aee85d3-d351-4a19-b215-12b2fd7da4c2" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$FolderNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$FolderNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/MapOptionsPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/MapOptionsPanel.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/War3ModelImporterGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/War3ModelImporterGUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/Wc3MapAssetImporter.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/Wc3MapAssetImporter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/War3AssetsImporter-1.0-SNAPSHOT.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/jar/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/AssetTreePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/AssetTreePanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CheckBoxNodeEditor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CheckBoxNodeRenderer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CheckBoxTreeNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MapOptionsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MapOptionsPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/War3ModelImporterGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/War3ModelImporterGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Wc3MapAssetImporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Wc3MapAssetImporter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test-sample/processed_test-empty-map.w3m" beforeDir="false" afterPath="$PROJECT_DIR$/src/test-sample/processed_test-empty-map.w3m" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test-sample/test-empty-map.w3m" beforeDir="false" afterPath="$PROJECT_DIR$/src/test-sample/test-empty-map.w3m" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../wc3libs/src/main/java/net/moonlightflower/wc3libs/bin/app/DOO_UNITS.java" beforeDir="false" afterPath="$PROJECT_DIR$/../wc3libs/src/main/java/net/moonlightflower/wc3libs/bin/app/DOO_UNITS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../wc3libs/src/test/java/wc3libs/bin/app/DOO_UNITSTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../wc3libs/src/test/java/wc3libs/bin/app/DOO_UNITSTest.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,9 +51,24 @@
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
   <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/../JMPQ3">
+      <ProjectState />
+    </projectState>
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -25,20 +77,40 @@
       </list>
     </option>
   </component>
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/jmpq3/1.7.14/21a3afabb6ea4d9ba0966c61a2e00376dfe0dab/JMPQ3-1.7.14-sources.jar!/systems/crigges/jmpq3/JMpqEditor.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/jmpq3/264c54cfc8/2f2dd132bb6ce45a535660f99937a4559afd7c8/jmpq3-264c54cfc8-sources.jar!/systems/crigges/jmpq3/JMpqEditor.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/ObjMod.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/IMP.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/MapFooter.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/MapHeader.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/W3I.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/WCT.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/WTG.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/objMod/W3U.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/misc/ObjId.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/port/JMpqPort.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$USER_HOME$/.jdks/openjdk-18.0.1.1/lib/src.zip!/java.desktop/javax/swing/tree/DefaultMutableTreeNode.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="2ypW7ntXFFqCHJH7qrBnPROReNz" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
     <option name="autoscrollToSource" value="true" />
@@ -49,13 +121,23 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/Jaccouille/Documents/Work/Java/WurstScript2",
-    "project.structure.last.edited": "Project",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "C:/Users/Jaccouille/Documents/Work/Java/JMPQ3",
+    "project.structure.last.edited": "Libraries",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "rearrange.code.on.save": "true",
+    "settings.editor.selected.configurable": "actions.on.save"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="org.example" />
+    </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="org.example.StringUtils" />
+    </key>
+  </component>
   <component name="RunManager" selected="Application.War3ModelImporterGUI">
     <configuration name="TrigStrReplacer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.example.TrigStrReplacer" />
@@ -100,5 +182,17 @@
       <updated>1750531829951</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="systems.crigges.jmpq3.JMpqEditor" memberName="listFile" />
+      </pinned-members>
+    </pin-to-top-manager>
+    <watches-manager>
+      <configuration name="GradleRunConfiguration">
+        <watch expression="baos" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>
