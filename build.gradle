@@ -1,9 +1,14 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'org.example'
 version '1.0-SNAPSHOT'
+
+application {
+    mainClass = 'org.example.Main'
+}
 
 repositories {
     mavenCentral()
@@ -20,6 +25,12 @@ dependencies {
     // Water's wc3 libs
     implementation 'com.github.inwc3:JMPQ3:1.7.14'
 //    implementation 'com.github.inwc3:wc3libs:01fb9e23bf'
+
+    // CLI framework
+    implementation 'info.picocli:picocli:4.7.5'
+
+    // JSON (keybindings config)
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 test {

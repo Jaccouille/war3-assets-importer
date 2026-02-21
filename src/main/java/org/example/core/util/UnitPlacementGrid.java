@@ -1,7 +1,11 @@
-package org.example;
+package org.example.core.util;
 
 import net.moonlightflower.wc3libs.dataTypes.app.Coords2DF;
 
+/**
+ * Calculates sequential placement positions for units within map camera bounds.
+ * Positions are arranged in a left-to-right, top-to-bottom grid with a fixed step size.
+ */
 public class UnitPlacementGrid {
     private final float startX;
     private final float startY;
@@ -25,6 +29,9 @@ public class UnitPlacementGrid {
         this.unitsPlaced = 0;
     }
 
+    /**
+     * Returns the next grid position, or {@code null} if the grid is exhausted.
+     */
     public Coords2DF nextPosition() {
         if (currentY < endY) {
             // No more space to place units

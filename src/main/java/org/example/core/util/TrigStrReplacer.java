@@ -1,27 +1,24 @@
-package org.example;
+package org.example.core.util;
 
-import java.util.regex.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+/**
+ * Parses Warcraft 3 WTS trigger-string blocks and resolves TRIGSTR_### references
+ * to their string values.
+ */
 public class TrigStrReplacer {
 
-    public static void main(String[] args) {
-        String sourceText = "Some text TRIGSTR_003 and another TRIGSTR_007 here.";
-        String stringBlock = """
-            STRING 3
-            {
-            Test sample for War3ModelImporter {coucou} string 9 {test}
-            }
-            STRING 7
-            {
-            Another sample string
-            }
-            """;
-
-        String result = replaceTrigStr(sourceText, stringBlock);
-        System.out.println(result);
-    }
-
+    /**
+     * Replaces all {@code TRIGSTR_###} tokens in {@code input} with the corresponding
+     * string value from {@code stringBlock}.
+     *
+     * @param input       text containing TRIGSTR_### references
+     * @param stringBlock raw WTS block content
+     * @return text with all known TRIGSTR references substituted
+     */
     public static String replaceTrigStr(String input, String stringBlock) {
         // Parse STRING blocks into map
         Map<Integer, String> trigStrMap = new HashMap<>();

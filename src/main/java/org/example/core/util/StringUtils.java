@@ -1,10 +1,13 @@
-package org.example;
+package org.example.core.util;
 
 import net.moonlightflower.wc3libs.bin.app.W3I;
 
+/**
+ * Formatting utilities for Warcraft 3 data types.
+ */
 public class StringUtils {
+
     public static String buildGameVersionInfo(W3I w3i) {
-        // Format: Game Version: major.minor.rev.build
         return String.format(
                 "%d.%d.%d.%d",
                 w3i.getGameVersion_major(),

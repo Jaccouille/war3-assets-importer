@@ -1,7 +1,11 @@
-package org.example;
+package org.example.core.util;
 
 import net.moonlightflower.wc3libs.dataTypes.app.Coords2DF;
 
+/**
+ * Singleton holding the camera boundary coordinates extracted from a loaded map.
+ * Consumed by UnitPlacementGrid and ImportService for placing units within valid map bounds.
+ */
 public class CameraBounds {
     private static final CameraBounds instance = new CameraBounds();
 
