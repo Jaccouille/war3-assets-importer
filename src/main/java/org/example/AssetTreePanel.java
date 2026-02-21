@@ -11,10 +11,9 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AssetTreePanel extends JPanel {
     private final JCheckBoxTree assetTree;
@@ -86,7 +85,7 @@ public class AssetTreePanel extends JPanel {
     }
 
     public void updateTree(List<String> mdxFiles, List<String> blpFiles) {
-        // Build the two sub‐trees
+        // Build the two sub trees
         JCheckBoxTreeNode mdxNode = buildFolderTree("MDX Files", mdxFiles);
         JCheckBoxTreeNode blpNode = buildFolderTree("BLP Files", blpFiles);
 
@@ -232,6 +231,35 @@ public class AssetTreePanel extends JPanel {
             node.add(toCheckBoxNode(child, fullPath));
         }
         return node;
+    }
+
+    /**
+     * @return the set of Files corresponding to all checked leaf nodes.
+     */
+    public Set<Path> getCheckedFiles() {
+        Set<Path> files = new HashSet<>();
+        Path baseFolderPath = modelsFolder.toPath().toAbsolutePath().normalize();
+        // Ask the JCheckBoxTree for all checked tree nodes
+        TreeNode[] checked = assetTree.getCheckedPaths();
+        for (TreeNode tn : checked) {
+            if (!(tn instanceof JCheckBoxTreeNode node)) {
+                continue;
+            }
+            // Pull out your data
+            Object obj = node.getUserObject();
+            if (!(obj instanceof TreeNodeData data)) {
+                continue;
+            }
+            // Only include real files
+            if (!data.isFile()) {
+                continue;
+            }
+            // Resolve relative path against the modelsFolder base
+            Path filePath = new File(modelsFolder, data.relativePath()).toPath();
+            filePath = baseFolderPath.relativize(filePath);
+            files.add(filePath);
+        }
+        return files;
     }
 
     public interface AssetSelectionListener {

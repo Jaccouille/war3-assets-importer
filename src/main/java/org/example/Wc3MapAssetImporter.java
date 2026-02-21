@@ -20,7 +20,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,7 @@ public class Wc3MapAssetImporter {
 
     }
 
-    private static void insertImportedFiles(JMpqEditor mpq, List<File> directories, File rootFolder) throws Exception {
+    private static void insertImportedFiles(JMpqEditor mpq, Set<Path> models, Path rootFolder) throws Exception {
 
 //        DOO_UNITS dooUnits = mpq.hasFile(DOO_UNITS.GAME_PATH.toString())
 //                ? new DOO_UNITS(new Wc3BinInputStream(new ByteArrayInputStream(mpq.extractFileAsBytes(DOO_UNITS.GAME_PATH.toString()))))
@@ -95,65 +94,59 @@ public class Wc3MapAssetImporter {
         String unitId = "hfoo";
 
 //        w3u.addObj(ObjId.valueOf("x000"), ObjId.valueOf(unitId));
-        Path baseFolderPath = rootFolder.toPath().toAbsolutePath().normalize();
-        HashMap<String, File> insertedTextures = new HashMap<>();
+        Path baseFolderPath = rootFolder.toAbsolutePath().normalize();
+        HashMap<String, Path> insertedTextures = new HashMap<>();
 
         Coords2DF topLeft = CameraBounds.getInstance().getTopLeft();
         Coords2DF bottomRight = CameraBounds.getInstance().getBottomRight();
         UnitPlacementGrid placer = new UnitPlacementGrid(topLeft, bottomRight, 128);
 
-        for (File directory : directories) {
-            LinkedList<File> files = new LinkedList<>();
-            getFilesOfDirectory(directory, files);
-
-            for (File f : files) {
-                Path filePath = f.toPath();
-                filePath = baseFolderPath.relativize(filePath);
-                System.out.println("Processing file: " + filePath);
+        for (Path modelPath : models) {
+            Path filePath = baseFolderPath.relativize(modelPath);
+            System.out.println("Processing file: " + filePath);
 
 //                String normalizedWc3Path = p.toString().replaceAll("/", "\\\\");
-                IMP.Obj importObj = new IMP.Obj();
-                String insertedFilePath = filePath.toString();
+            IMP.Obj importObj = new IMP.Obj();
+            String insertedFilePath = filePath.toString();
 
-                if (insertedTextures.containsKey(f.getName())) {
-                    System.out.println("Skipping already inserted texture: " + filePath);
-                    continue;
-                }
-
-                if (f.getName().endsWith(".blp"))
-                    insertedFilePath = f.getName();
-
-                importObj.setPath(insertedFilePath);
-                importObj.setStdFlag(IMP.StdFlag.CUSTOM);
-                importFile.addObj(importObj);
-                mpq.deleteFile(insertedFilePath);
-                mpq.insertFile(insertedFilePath, f, false);
-                insertedTextures.put(f.getName(), f);
-
-                if (f.getName().endsWith(".mdx")) {
-                    String idString = UnitIDGenerator.generateNextId(existingIds);
-                    existingIds.add(idString);
-                    ObjId newId = ObjId.valueOf(idString);
-                    System.out.println("Adding unit with ID: " + newId);
-                    ObjMod.Obj unitObj = w3u.addObj(newId, ObjId.valueOf(unitId));
-                    unitObj.set(MetaFieldId.valueOf("umdl"), new War3String(filePath.toString()));
-                    unitObj.set(MetaFieldId.valueOf("unam"), new War3String(f.getName().replaceAll(".mdx", "")));
-
-                    DOO_UNITS.Obj obj = dooUnits.addObj();
-                    obj.setTypeId(newId);
-                    obj.setSkinId(newId);
-
-                    Coords2DF coords2DF = placer.nextPosition();
-
-                    float x = coords2DF.getX().getVal();
-                    float y = coords2DF.getY().getVal();
-                    System.out.println("Placing unit at: " + x + ", " + y);
-
-                    obj.setPos(new Coords3DF(x, y, 0));
-                    obj.setAngle(270);
-                }
-
+            if (insertedTextures.containsKey(modelPath.getFileName().toString())) {
+                System.out.println("Skipping already inserted texture: " + filePath);
+                continue;
             }
+
+            if (modelPath.getFileName().endsWith(".blp"))
+                insertedFilePath = modelPath.getFileName().toString();
+
+            importObj.setPath(insertedFilePath);
+            importObj.setStdFlag(IMP.StdFlag.CUSTOM);
+            importFile.addObj(importObj);
+            mpq.deleteFile(insertedFilePath);
+            mpq.insertFile(insertedFilePath, modelPath.toFile(), false);
+            insertedTextures.put(modelPath.getFileName().toString(), modelPath);
+
+            if (modelPath.getFileName().endsWith(".mdx")) {
+                String idString = UnitIDGenerator.generateNextId(existingIds);
+                existingIds.add(idString);
+                ObjId newId = ObjId.valueOf(idString);
+                System.out.println("Adding unit with ID: " + newId);
+                ObjMod.Obj unitObj = w3u.addObj(newId, ObjId.valueOf(unitId));
+                unitObj.set(MetaFieldId.valueOf("umdl"), new War3String(filePath.toString()));
+                unitObj.set(MetaFieldId.valueOf("unam"), new War3String(modelPath.getFileName().toString().replaceAll(".mdx", "")));
+
+                DOO_UNITS.Obj obj = dooUnits.addObj();
+                obj.setTypeId(newId);
+                obj.setSkinId(newId);
+
+                Coords2DF coords2DF = placer.nextPosition();
+
+                float x = coords2DF.getX().getVal();
+                float y = coords2DF.getY().getVal();
+                System.out.println("Placing unit at: " + x + ", " + y);
+
+                obj.setPos(new Coords3DF(x, y, 0));
+                obj.setAngle(270);
+            }
+
         }
         mpq.deleteFile(IMP.GAME_PATH);
         mpq.deleteFile("war3map.w3u");
@@ -163,6 +156,7 @@ public class Wc3MapAssetImporter {
         try (Wc3BinOutputStream wc3BinOutputStream = new Wc3BinOutputStream(byteArrayOutputStream)) {
             w3u.write(wc3BinOutputStream);
         }
+
         byteArrayOutputStream.flush();
         byte[] byteArray = byteArrayOutputStream.toByteArray();
         mpq.insertByteArray("war3map.w3u", byteArray);
@@ -187,14 +181,9 @@ public class Wc3MapAssetImporter {
 
     }
 
-    public static void importAssetFiles(JMpqEditor ed, File projectFolder) {
-        LinkedList<File> folders = new LinkedList<>();
-        folders.add(projectFolder);
-
-        folders.removeIf(folder -> !folder.exists());
-
+    public static void importAssetFiles(JMpqEditor ed, Set<Path> filesToImport, Path rootFolder) {
         try {
-            insertImportedFiles(ed, folders, projectFolder);
+            insertImportedFiles(ed, filesToImport, rootFolder);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

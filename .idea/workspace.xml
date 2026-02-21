@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0aee85d3-d351-4a19-b215-12b2fd7da4c2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/checksums/md5-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/executionHistory/executionHistory.lock" afterDir="false" />
@@ -15,30 +14,23 @@
       <change beforePath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/7.5.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$2.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$FolderNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel$FolderNode.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/AssetTreePanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/MapOptionsPanel.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/MapOptionsPanel.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/War3ModelImporterGUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/War3ModelImporterGUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/MapProcessingTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/MapProcessingTask.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/War3ModelImporterGUI.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/org/example/Wc3MapAssetImporter.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/org/example/Wc3MapAssetImporter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/libs/War3AssetsImporter-1.0-SNAPSHOT.jar" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/jar/MANIFEST.MF" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/AssetTreePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/AssetTreePanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CheckBoxNodeEditor.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CheckBoxNodeRenderer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/CheckBoxTreeNode.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MapOptionsPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MapOptionsPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/War3ModelImporterGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/War3ModelImporterGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/MapProcessingTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MapProcessingTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/War3ModelImporterGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/MainFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/Wc3MapAssetImporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/Wc3MapAssetImporter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test-sample/processed_test-empty-map.w3m" beforeDir="false" afterPath="$PROJECT_DIR$/src/test-sample/processed_test-empty-map.w3m" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test-sample/test-empty-map.w3m" beforeDir="false" afterPath="$PROJECT_DIR$/src/test-sample/test-empty-map.w3m" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo.md" beforeDir="false" afterPath="$PROJECT_DIR$/todo.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../wc3libs/src/main/java/net/moonlightflower/wc3libs/bin/app/DOO_UNITS.java" beforeDir="false" afterPath="$PROJECT_DIR$/../wc3libs/src/main/java/net/moonlightflower/wc3libs/bin/app/DOO_UNITS.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../wc3libs/src/test/java/wc3libs/bin/app/DOO_UNITSTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../wc3libs/src/test/java/wc3libs/bin/app/DOO_UNITSTest.java" afterDir="false" />
     </list>
@@ -63,7 +55,12 @@
       <state>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="War3AssetsImporter" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -84,18 +81,6 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/jmpq3/1.7.14/21a3afabb6ea4d9ba0966c61a2e00376dfe0dab/JMPQ3-1.7.14-sources.jar!/systems/crigges/jmpq3/JMpqEditor.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/jmpq3/264c54cfc8/2f2dd132bb6ce45a535660f99937a4559afd7c8/jmpq3-264c54cfc8-sources.jar!/systems/crigges/jmpq3/JMpqEditor.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/ObjMod.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/IMP.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/MapFooter.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/MapHeader.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/W3I.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/WCT.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/WTG.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/bin/app/objMod/W3U.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/misc/ObjId.java" root0="SKIP_INSPECTION" />
-    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.inwc3/wc3libs/01fb9e23bf/4f2960c51103c047c4e2995ba9982ab9f1c4d711/wc3libs-01fb9e23bf-sources.jar!/net/moonlightflower/wc3libs/port/JMpqPort.java" root0="SKIP_INSPECTION" />
     <setting file="jar://$USER_HOME$/.jdks/openjdk-18.0.1.1/lib/src.zip!/java.desktop/javax/swing/tree/DefaultMutableTreeNode.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="MarkdownSettingsMigration">
@@ -117,19 +102,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "last_opened_file_path": "C:/Users/Jaccouille/Documents/Work/Java/JMPQ3",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "rearrange.code.on.save": "true",
-    "settings.editor.selected.configurable": "actions.on.save"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Jaccouille/Documents/Work/Java/JMPQ3&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;rearrange.code.on.save&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;actions.on.save&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="org.example" />
@@ -138,7 +123,33 @@
       <recent name="org.example.StringUtils" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.War3ModelImporterGUI">
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.example.Main" />
+      <module name="War3AssetsImporter.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.example.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MainFrame" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.example.MainFrame" />
+      <module name="War3AssetsImporter.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.example.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="TrigStrReplacer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.example.TrigStrReplacer" />
       <module name="War3AssetsImporter.main" />
@@ -152,23 +163,11 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="War3ModelImporterGUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.example.War3ModelImporterGUI" />
-      <module name="War3AssetsImporter.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="org.example.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main" />
         <item itemvalue="Application.TrigStrReplacer" />
-        <item itemvalue="Application.War3ModelImporterGUI" />
+        <item itemvalue="Application.MainFrame" />
       </list>
     </recent_temporary>
   </component>
@@ -184,6 +183,15 @@
     <servers />
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/example/Wc3MapAssetImporter.java</url>
+          <line>104</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <pin-to-top-manager>
       <pinned-members>
         <PinnedItemInfo parentTag="systems.crigges.jmpq3.JMpqEditor" memberName="listFile" />
