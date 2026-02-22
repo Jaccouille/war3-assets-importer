@@ -15,6 +15,8 @@ import javax.imageio.ImageReader;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -55,9 +57,10 @@ public class MainFrame {
     // ---- Swing components ----
     private JFrame frame;
     private JTextArea logArea;
-    private MapOptionsPanel optionsPanel;
-    private AssetTreePanel assetTreePanel;
-    private PreviewPanel previewPanel;
+    private MapOptionsPanel    optionsPanel;
+    private AssetTreePanel     assetTreePanel;
+    private PreviewPanel       previewPanel;
+    private ImportConfigPanel  importConfigPanel;
 
     // Toolbar buttons (kept as fields so applyI18n() can update their labels)
     private JButton openMapButton;
@@ -97,27 +100,29 @@ public class MainFrame {
         logArea = new JTextArea();
         logArea.setEditable(false);
 
-        optionsPanel = new MapOptionsPanel();
-        assetTreePanel = new AssetTreePanel();
-        previewPanel = new PreviewPanel();
+        optionsPanel      = new MapOptionsPanel();
+        assetTreePanel    = new AssetTreePanel();
+        previewPanel      = new PreviewPanel();
+        importConfigPanel = new ImportConfigPanel();
 
         assetTreePanel.setAssetSelectionListener(this::onAssetSelected);
         assetTreePanel.setFolderSelectionListener(this::onFolderSelected);
 
+        // "Assets" tab: asset tree on the left, preview panel on the right
         JSplitPane assetPreviewPane = new JSplitPane(
                 JSplitPane.HORIZONTAL_SPLIT, assetTreePanel, previewPanel);
-        assetPreviewPane.setResizeWeight(0.7);
-        assetPreviewPane.setDividerLocation(400);
+        assetPreviewPane.setResizeWeight(0.6);
+        assetPreviewPane.setDividerLocation(350);
         assetPreviewPane.setOneTouchExpandable(true);
 
-        JSplitPane leftRightPane = new JSplitPane(
-                JSplitPane.HORIZONTAL_SPLIT, optionsPanel, assetPreviewPane);
-        leftRightPane.setResizeWeight(0.3);
-        leftRightPane.setDividerLocation(300);
-        leftRightPane.setOneTouchExpandable(true);
+        // Tabbed pane replaces the old horizontal split
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Map Description",      optionsPanel);
+        tabbedPane.addTab("Assets",               assetPreviewPane);
+        tabbedPane.addTab("Import Configuration", importConfigPanel);
 
         JSplitPane verticalSplit = new JSplitPane(
-                JSplitPane.VERTICAL_SPLIT, leftRightPane, new JScrollPane(logArea));
+                JSplitPane.VERTICAL_SPLIT, tabbedPane, new JScrollPane(logArea));
         verticalSplit.setResizeWeight(0.8);
         verticalSplit.setDividerLocation(500);
         verticalSplit.setOneTouchExpandable(true);
@@ -190,6 +195,15 @@ public class MainFrame {
             optionsPanel.setMapVersion(meta.gameVersion());
             optionsPanel.setEditorVersion(meta.editorVersion());
             optionsPanel.setPreviewImage(meta.previewImageBytes());
+
+            // Feed the map image into the Import Configuration preview panel
+            byte[] previewBytes = meta.previewImageBytes();
+            if (previewBytes != null && previewBytes.length > 0) {
+                try {
+                    BufferedImage previewImg = ImageIO.read(new ByteArrayInputStream(previewBytes));
+                    if (previewImg != null) importConfigPanel.setMapPreviewImage(previewImg);
+                } catch (Exception ignored) {}
+            }
 
             log("Top left: " + meta.cameraBounds().getTopLeft());
             log("Bottom right: " + meta.cameraBounds().getBottomRight());
