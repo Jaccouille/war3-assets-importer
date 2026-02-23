@@ -249,17 +249,17 @@ public class MapPreviewPanel extends JPanel {
     private void paintTriangle(Graphics2D g, int x, int y) {
         double rad = Math.toRadians(unitAngle);
 
-        // Tip: forward
-        int tipX = x + (int) (9 * Math.cos(rad));
-        int tipY = y - (int) (9 * Math.sin(rad));   // negate for screen Y
+        // Tip: forward — distance 14 px for good visibility at typical zoom levels
+        int tipX = x + (int) (14 * Math.cos(rad));
+        int tipY = y - (int) (14 * Math.sin(rad));   // negate for screen Y
 
-        // Wings: 150° back-left and back-right from the forward direction
-        double leftRad  = rad + Math.toRadians(150);
-        double rightRad = rad - Math.toRadians(150);
-        int lx = x + (int) (6 * Math.cos(leftRad));
-        int ly = y - (int) (6 * Math.sin(leftRad));
-        int rx = x + (int) (6 * Math.cos(rightRad));
-        int ry = y - (int) (6 * Math.sin(rightRad));
+        // Wings: 140° back from the forward direction (was 150°) → wider arrowhead
+        double leftRad  = rad + Math.toRadians(140);
+        double rightRad = rad - Math.toRadians(140);
+        int lx = x + (int) (9 * Math.cos(leftRad));
+        int ly = y - (int) (9 * Math.sin(leftRad));
+        int rx = x + (int) (9 * Math.cos(rightRad));
+        int ry = y - (int) (9 * Math.sin(rightRad));
 
         int[] xs = {tipX, lx, rx};
         int[] ys = {tipY, ly, ry};

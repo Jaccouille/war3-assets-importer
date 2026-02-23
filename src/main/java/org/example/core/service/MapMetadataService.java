@@ -41,9 +41,9 @@ public class MapMetadataService {
 
             String gameVersion = StringUtils.buildGameVersionInfo(w3i);
             String editorVersion = String.valueOf(w3i.getEditorVersion());
-            String name = namedEntries.getOrDefault(w3i.getMapName(), "<unknown>");
-            String author = namedEntries.getOrDefault(w3i.getMapAuthor(), "<unknown>");
-            String desc = namedEntries.getOrDefault(w3i.getMapDescription(), "<no description>");
+            String name   = resolveTrigStr(w3i.getMapName(),        namedEntries, "<unknown>");
+            String author = resolveTrigStr(w3i.getMapAuthor(),      namedEntries, "<unknown>");
+            String desc   = resolveTrigStr(w3i.getMapDescription(), namedEntries, "<no description>");
 
             CameraBounds bounds = CameraBounds.getInstance();
             bounds.setCameraBounds(
@@ -55,5 +55,54 @@ public class MapMetadataService {
 
             return new MapMetadata(name, author, gameVersion, editorVersion, desc, previewBytes, bounds);
         }
+    }
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Resolves a value from a W3I field that may be either:
+     * <ul>
+     *   <li>A plain string (non-localised maps) — returned as-is.</li>
+     *   <li>A WTS trigger-string reference like {@code "TRIGSTR_001"} — looked up
+     *       in {@code namedEntries}.  Several key formats are tried in order
+     *       ({@code "TRIGSTR_001"}, {@code "001"}, {@code "STRING 1"}) to cope with
+     *       different wc3libs serialisation styles.</li>
+     * </ul>
+     *
+     * @param raw          the raw string stored in the W3I field (may be {@code null})
+     * @param namedEntries the WTS entry map returned by {@link WTS#getNamedEntries()}
+     * @param fallback     the value to return when {@code raw} is {@code null} or blank
+     * @return             the resolved, trimmed display string
+     */
+    private static String resolveTrigStr(String raw, Map<String, String> namedEntries, String fallback) {
+        if (raw == null || raw.isBlank()) return fallback;
+
+        // 1. Direct lookup — works when wc3libs uses "TRIGSTR_NNN" as map key
+        String resolved = namedEntries.get(raw);
+        if (resolved != null) return resolved.trim();
+
+        // 2. The raw value is a TRIGSTR reference; WTS may use a different key format
+        if (raw.startsWith("TRIGSTR_")) {
+            String numPart = raw.substring("TRIGSTR_".length()); // e.g. "001"
+
+            // 2a. Bare numeric string: "001"
+            resolved = namedEntries.get(numPart);
+            if (resolved != null) return resolved.trim();
+
+            // 2b. "STRING N" with decimal (no leading zeros): "STRING 1"
+            try {
+                int num = Integer.parseInt(numPart);
+                resolved = namedEntries.get("STRING " + num);
+                if (resolved != null) return resolved.trim();
+            } catch (NumberFormatException ignored) {}
+
+            // 2c. Fallback: the TRIGSTR token itself is the best we can show
+            return raw;
+        }
+
+        // 3. Not a TRIGSTR reference — it is the literal string value
+        return raw.trim();
     }
 }

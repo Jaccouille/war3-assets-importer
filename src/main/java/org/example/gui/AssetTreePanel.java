@@ -63,6 +63,9 @@ public class AssetTreePanel extends JPanel {
 
         setupExpandCollapseBehavior();
         assetTree.addTreeSelectionListener(e -> onTreeSelect());
+        // Text-click (no toggle) → still update the preview panel
+        assetTree.setRowFocusCallback(this::notifyFocusedRowChange);
+
         assetTree.addCheckChangeEventListener(evt -> {
             Object nodeObj = evt.getSource();
             if (!(nodeObj instanceof JCheckBoxTreeNode node)) return;

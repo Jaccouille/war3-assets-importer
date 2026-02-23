@@ -3,13 +3,18 @@ package org.example.gui;
 import org.example.gui.i18n.Messages;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -138,6 +143,14 @@ public class PreviewPanel extends JPanel {
             lbl.setHorizontalTextPosition(SwingConstants.CENTER);
             lbl.setPreferredSize(new Dimension(THUMB_SIZE + 20, THUMB_SIZE + 30));
             lbl.setToolTipText(f.getName());
+
+            // Double-click → show BLP metadata popup
+            lbl.addMouseListener(new MouseAdapter() {
+                @Override public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) showBlpInfoDialog(f);
+                }
+            });
+
             gridPanel.add(lbl);
             labels.add(lbl);
         }
@@ -214,6 +227,101 @@ public class PreviewPanel extends JPanel {
 
     private static String truncate(String text, int maxLen) {
         return text.length() <= maxLen ? text : text.substring(0, maxLen - 1) + "\u2026";
+    }
+
+    // -------------------------------------------------------------------------
+    // BLP info popup
+    // -------------------------------------------------------------------------
+
+    /**
+     * Opens a small dialog showing metadata for {@code file}:
+     * filename, file size, pixel dimensions, and mipmap count.
+     * Uses the registered BLP {@link ImageReader} when available.
+     */
+    private void showBlpInfoDialog(File file) {
+        JPanel infoPanel = new JPanel(new GridBagLayout());
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+
+        GridBagConstraints lc = new GridBagConstraints();
+        lc.gridx = 0; lc.anchor = GridBagConstraints.NORTHWEST;
+        lc.insets = new Insets(2, 4, 2, 10);
+
+        GridBagConstraints vc = new GridBagConstraints();
+        vc.gridx = 1; vc.anchor = GridBagConstraints.NORTHWEST; vc.weightx = 1.0;
+        vc.insets = new Insets(2, 0, 2, 4);
+
+        int[] row = {0};
+
+        addInfoRow(infoPanel, lc, vc, row[0]++, "File:",          file.getName());
+        addInfoRow(infoPanel, lc, vc, row[0]++, "Size on disk:",  formatFileSize(file.length()));
+
+        // Separator
+        GridBagConstraints sep = new GridBagConstraints();
+        sep.gridx = 0; sep.gridy = row[0]++; sep.gridwidth = 2;
+        sep.fill = GridBagConstraints.HORIZONTAL; sep.insets = new Insets(4, 0, 4, 0);
+        infoPanel.add(new JSeparator(), sep);
+
+        try {
+            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("blp");
+            if (readers.hasNext()) {
+                ImageReader reader = readers.next();
+                try (ImageInputStream iis = ImageIO.createImageInputStream(file)) {
+                    if (iis == null) throw new IOException("Cannot create image stream");
+                    reader.setInput(iis, false, false);
+
+                    int w = reader.getWidth(0);
+                    int h = reader.getHeight(0);
+                    addInfoRow(infoPanel, lc, vc, row[0]++, "Dimensions:", w + " × " + h + " px");
+
+                    try {
+                        int mipmaps = reader.getNumImages(true);
+                        addInfoRow(infoPanel, lc, vc, row[0]++, "Mipmap levels:", String.valueOf(mipmaps));
+                    } catch (IOException ex) {
+                        addInfoRow(infoPanel, lc, vc, row[0]++, "Mipmap levels:", "N/A");
+                    }
+
+                    addInfoRow(infoPanel, lc, vc, row[0]++, "Format:",
+                            reader.getFormatName() != null ? reader.getFormatName() : "BLP");
+                } finally {
+                    reader.dispose();
+                }
+            } else {
+                // BLP reader not registered — fall back to plain ImageIO
+                BufferedImage img = ImageIO.read(file);
+                if (img != null) {
+                    addInfoRow(infoPanel, lc, vc, row[0]++, "Dimensions:",
+                            img.getWidth() + " × " + img.getHeight() + " px");
+                }
+                addInfoRow(infoPanel, lc, vc, row[0]++, "Note:", "BLP reader not available");
+            }
+        } catch (Exception ex) {
+            addInfoRow(infoPanel, lc, vc, row[0]++, "Error:", ex.getMessage());
+        }
+
+        JOptionPane.showMessageDialog(
+                SwingUtilities.getWindowAncestor(this),
+                infoPanel,
+                "BLP Image Info — " + file.getName(),
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Adds a bold label + value row to a GridBagLayout panel. */
+    private static void addInfoRow(JPanel p,
+                                   GridBagConstraints lc, GridBagConstraints vc,
+                                   int row, String label, String value) {
+        lc.gridy = row;
+        vc.gridy = row;
+        JLabel l = new JLabel(label);
+        l.setFont(l.getFont().deriveFont(Font.BOLD));
+        p.add(l, lc);
+        p.add(new JLabel(value), vc);
+    }
+
+    /** Returns a human-readable byte count (B / KB / MB). */
+    private static String formatFileSize(long bytes) {
+        if (bytes < 1_024)           return bytes + " B";
+        if (bytes < 1_024 * 1_024)   return String.format("%.1f KB", bytes / 1_024.0);
+        return String.format("%.1f MB", bytes / (1_024.0 * 1_024));
     }
 
     // -------------------------------------------------------------------------
