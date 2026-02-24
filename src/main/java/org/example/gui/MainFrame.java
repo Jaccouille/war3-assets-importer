@@ -263,8 +263,7 @@ public class MainFrame {
                 importConfigPanel.isPlaceUnitsSelected(),
                 importConfigPanel.isClearUnitsSelected(),
                 importConfigPanel.isClearAssetsSelected(),
-                importConfigPanel.getSelectedUnitDefinition() != null
-                        ? importConfigPanel.getSelectedUnitDefinition() : "hfoo"
+                "hfoo"  // Default unit definition
         );
 
         // Run on background thread via SwingWorker wrapper

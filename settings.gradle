@@ -1,2 +1,2 @@
 rootProject.name = 'War3AssetsImporter'
-includeBuild '../../../../wc3libs'
+includeBuild '../wc3libs'

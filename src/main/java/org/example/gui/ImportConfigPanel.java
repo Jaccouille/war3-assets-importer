@@ -3,6 +3,7 @@ package org.example.gui;
 import org.example.gui.i18n.Messages;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -43,12 +44,14 @@ public class ImportConfigPanel extends JPanel {
     private final JCheckBox    placeUnitsBox;
     private final JCheckBox    clearUnitsBox;
     private final JCheckBox    clearAssetsBox;
-    private final JComboBox<String> unitDefinitionSelect;
     private final JSpinner     unitScalingSpinner;
 
     // ---- Unit naming fields ----
     private final JCheckBox    autoNameUnitsBox;
     private final JComboBox<String> nameFormatCombo;
+
+    // ---- Caching for preview ----
+    private java.util.List<String> selectedMdxFilenames = java.util.Collections.emptyList();
 
     // -------------------------------------------------------------------------
     // Construction
@@ -72,7 +75,6 @@ public class ImportConfigPanel extends JPanel {
         placeUnitsBox = new JCheckBox();
         clearUnitsBox = new JCheckBox();
         clearAssetsBox = new JCheckBox();
-        unitDefinitionSelect = new JComboBox<>();
         unitScalingSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.1, 10.0, 0.1));
 
         // ---- Unit naming fields ----
@@ -95,7 +97,6 @@ public class ImportConfigPanel extends JPanel {
         unitSpacingSpinner.addChangeListener(e -> syncConfig());
         showTrianglesBox  .addActionListener(e -> syncConfig());
         placingOrderCombo .addActionListener(e -> syncConfig());
-        createUnitsBox.addActionListener(e -> unitDefinitionSelect.setVisible(createUnitsBox.isSelected()));
         syncConfig();
     }
 
@@ -168,9 +169,6 @@ public class ImportConfigPanel extends JPanel {
         clearAssetsBox.setText(Messages.get("checkbox.clearAssets"));
         p.add(clearAssetsBox, cc);
 
-        addRow(p, lc, fc, row++, Messages.get("label.unitDefinition"), unitDefinitionSelect);
-        unitDefinitionSelect.setVisible(false);
-
         addRow(p, lc, fc, row++, "Unit Scaling:", unitScalingSpinner);
 
         return p;
@@ -242,10 +240,42 @@ public class ImportConfigPanel extends JPanel {
     }
 
     private void showNamingPreview() {
+        if (selectedMdxFilenames.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No MDX files selected. Please select MDX files in the Assets tab first.",
+                    "Unit Naming Preview",
+                    JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        String format = getNameFormat();
+        String[] columnNames = {"Original Name", "Formatted Name"};
+        Object[][] data = new Object[selectedMdxFilenames.size()][2];
+
+        for (int i = 0; i < selectedMdxFilenames.size(); i++) {
+            String filename = selectedMdxFilenames.get(i);
+            String formatted = NameFormatter.format(filename, format);
+            data[i][0] = removeExtension(filename);
+            data[i][1] = formatted;
+        }
+
+        JTable table = new JTable(data, columnNames);
+        table.setDefaultEditor(Object.class, null);  // Make read-only
+        table.setRowHeight(24);
+        table.getTableHeader().setReorderingAllowed(false);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setPreferredSize(new Dimension(400, Math.min(300, selectedMdxFilenames.size() * 24 + 30)));
+
         JOptionPane.showMessageDialog(this,
-                "Preview feature: select MDX files in the Assets tab to see renamed results",
-                "Unit Naming Preview",
+                scrollPane,
+                "Unit Naming Preview - " + format,
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static String removeExtension(String filename) {
+        int lastDot = filename.lastIndexOf('.');
+        return lastDot > 0 ? filename.substring(0, lastDot) : filename;
     }
 
     private JPanel buildMapPanel() {
@@ -311,22 +341,17 @@ public class ImportConfigPanel extends JPanel {
         mapPreviewPanel.setMapImage(image);
     }
 
-    /**
-     * Sets the available unit definitions (called when a map is loaded).
-     * Moved from MapOptionsPanel.
-     */
-    public void setUnitDefinitions(List<String> unitNames) {
-        unitDefinitionSelect.removeAllItems();
-        for (String name : unitNames) unitDefinitionSelect.addItem(name);
+    /** Sets the list of selected MDX filenames for the naming preview. */
+    public void setSelectedMdxFilenames(java.util.List<String> filenames) {
+        this.selectedMdxFilenames = filenames != null ? filenames : java.util.Collections.emptyList();
     }
 
     // ---- Unit Creation Getters ----
-    public boolean isCreateUnitsSelected()      { return createUnitsBox.isSelected(); }
-    public boolean isPlaceUnitsSelected()       { return placeUnitsBox.isSelected(); }
-    public boolean isClearUnitsSelected()       { return clearUnitsBox.isSelected(); }
-    public boolean isClearAssetsSelected()      { return clearAssetsBox.isSelected(); }
-    public String  getSelectedUnitDefinition()  { return (String) unitDefinitionSelect.getSelectedItem(); }
-    public double  getUnitScaling()             { return ((Number) unitScalingSpinner.getValue()).doubleValue(); }
+    public boolean isCreateUnitsSelected()  { return createUnitsBox.isSelected(); }
+    public boolean isPlaceUnitsSelected()   { return placeUnitsBox.isSelected(); }
+    public boolean isClearUnitsSelected()   { return clearUnitsBox.isSelected(); }
+    public boolean isClearAssetsSelected()  { return clearAssetsBox.isSelected(); }
+    public double  getUnitScaling()         { return ((Number) unitScalingSpinner.getValue()).doubleValue(); }
 
     // ---- Unit Placement Getters ----
     public String  getUnitOriginId()  { return unitOriginIdField.getText(); }
