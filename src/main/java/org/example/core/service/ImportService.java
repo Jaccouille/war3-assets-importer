@@ -266,7 +266,7 @@ public class ImportService {
                         dooUnitObj.setTypeId(newId);
                         dooUnitObj.setSkinId(newId);
                         dooUnitObj.setPos(new Coords3DF(coords.getX().getVal(), coords.getY().getVal(), 0));
-                        dooUnitObj.setAngle(options.getUnitAngle());
+                        dooUnitObj.setAngle((float) Math.toRadians(options.getUnitAngle()));
                         dooUnitObj.setScale(new Coords3DF(1F, 1F, 1F));
                         dooUnitObj.setLifePerc(-1);  // -1 = use unit's default max health
                         dooUnitObj.setManaPerc(-1);  // -1 = use unit's default max mana

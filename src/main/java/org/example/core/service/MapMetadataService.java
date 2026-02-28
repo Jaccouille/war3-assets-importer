@@ -230,7 +230,7 @@ public class MapMetadataService {
                 double normY = 1.0 - (worldY - minY) / rangeY;
 
                 // DOO_UNITS stores angles in degrees (same convention as the unit angle spinner)
-                double angleDeg = obj.getAngle();
+                double angleDeg = Math.toDegrees(obj.getAngle());
 
                 result.add(new ExistingUnit(normX, normY, angleDeg));
             }

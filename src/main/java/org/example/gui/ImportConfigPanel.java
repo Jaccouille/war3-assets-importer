@@ -71,7 +71,7 @@ public class ImportConfigPanel extends JPanel {
         // ---- Unit placement fields ----
         unitOriginField = new UnitSuggestionField("hfoo");
 
-        unitAngleSpinner = new JSpinner(new SpinnerNumberModel(270.0, 0.0, 360.0, 1.0));
+        unitAngleSpinner = new JSpinner(new SpinnerNumberModel(270.0, 0.0, 360.0, 15.0));
         unitSpacingXSpinner = new JSpinner(new SpinnerNumberModel(16.0, 1.0, 5000.0, 8.0));
         unitSpacingYSpinner = new JSpinner(new SpinnerNumberModel(16.0, 1.0, 5000.0, 8.0));
         placingOrderCombo = new JComboBox<>(MapPreviewPanel.PlacingOrder.values());
