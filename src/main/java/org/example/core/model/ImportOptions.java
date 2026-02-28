@@ -26,12 +26,13 @@ public final class ImportOptions {
     private final String unitOriginId;
     private final boolean autoNameUnits;
     private final String nameFormat;
+    private final boolean autoAssignIcon;
     /** Optional drawn-shape bounds in world space; {@code null} = fall back to camera bounds. */
     private final PlacementBounds placementBounds;
 
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
                          boolean clearAssets, String unitOriginId) {
-        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", null);
+        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", false, null);
     }
 
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
@@ -39,6 +40,7 @@ public final class ImportOptions {
                          float unitAngle, double unitSpacingX, double unitSpacingY,
                          String unitOriginId,
                          boolean autoNameUnits, String nameFormat,
+                         boolean autoAssignIcon,
                          PlacementBounds placementBounds) {
         this.createUnits = createUnits;
         this.placeUnits = placeUnits;
@@ -51,6 +53,7 @@ public final class ImportOptions {
         this.unitOriginId = unitOriginId;
         this.autoNameUnits = autoNameUnits;
         this.nameFormat = nameFormat;
+        this.autoAssignIcon = autoAssignIcon;
         this.placementBounds = placementBounds;
     }
 
@@ -100,6 +103,10 @@ public final class ImportOptions {
 
     public String getNameFormat() {
         return nameFormat;
+    }
+
+    public boolean getAutoAssignIcon() {
+        return autoAssignIcon;
     }
 
     /**

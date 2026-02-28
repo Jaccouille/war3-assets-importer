@@ -197,6 +197,20 @@ public class ImportService {
         Path baseFolderPath = rootFolder.toPath().toAbsolutePath().normalize();
         HashMap<String, File> insertedTextures = new HashMap<>();
 
+        // Build a lookup from model base name (lowercase) -> BTN icon filename.
+        // Icons are BLP files whose name starts with "BTN"; the rest of the name (minus extension)
+        // is matched against the MDX filename (minus extension).
+        Map<String, String> iconByModelName = new HashMap<>();
+        if (options.getAutoAssignIcon()) {
+            for (Path p : selectedFiles) {
+                String name = p.toFile().getName();
+                if (name.toLowerCase().startsWith("btn") && name.toLowerCase().endsWith(".blp")) {
+                    String key = name.substring(3).replaceAll("(?i)\\.blp$", "").toLowerCase();
+                    iconByModelName.put(key, name); // BLPs are stored flat, so just the filename
+                }
+            }
+        }
+
         // Prefer the user-drawn shape bounds (world coords + world spacing already computed).
         // Fall back to full camera bounds with the raw screen-pixel spacing when no shape was drawn.
         ImportOptions.PlacementBounds pb = options.getPlacementBounds();
@@ -282,6 +296,14 @@ public class ImportService {
                         unitName = f.getName().replaceAll("(?i)\\.mdx$", "");
                     }
                     unitObj.set(MetaFieldId.valueOf("unam"), new War3String(unitName));
+
+                    String modelBaseName = f.getName().replaceAll("(?i)\\.mdx$", "").toLowerCase();
+                    String iconFilename = iconByModelName.get(modelBaseName);
+                    if (iconFilename != null) {
+                        unitObj.set(MetaFieldId.valueOf("uico"), new War3String(iconFilename));
+                        log.accept("Assigned icon: " + iconFilename);
+                    }
+
                     existingModelPaths.add(modelPath);
 
                     if (options.getPlaceUnits() && placer != null && !dooUnitsParseFailed) {

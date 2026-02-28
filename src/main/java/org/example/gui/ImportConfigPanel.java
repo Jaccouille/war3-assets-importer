@@ -49,6 +49,7 @@ public class ImportConfigPanel extends JPanel {
     // ---- Unit naming fields ----
     private final JCheckBox autoNameUnitsBox;
     private final JComboBox<String> nameFormatCombo;
+    private final JCheckBox autoAssignIconBox;
 
     // ---- Capacity status bar ----
     private final JLabel capacityIndicator;
@@ -85,6 +86,7 @@ public class ImportConfigPanel extends JPanel {
 
         // ---- Unit naming fields ----
         autoNameUnitsBox = new JCheckBox("Auto-name from MDX filename");
+        autoAssignIconBox = new JCheckBox("Auto-assign BTN icon");
         nameFormatCombo = new JComboBox<>(new String[]{
                 "Space Separated (keep case)",
                 "Space Separated",
@@ -268,6 +270,9 @@ public class ImportConfigPanel extends JPanel {
         cc.insets = new Insets(5, 10, 5, 10);
         p.add(autoNameUnitsBox, cc);
 
+        cc.gridy = 1;
+        p.add(autoAssignIconBox, cc);
+
         GridBagConstraints lc = new GridBagConstraints();
         lc.gridx = 0;
         lc.anchor = GridBagConstraints.WEST;
@@ -279,12 +284,12 @@ public class ImportConfigPanel extends JPanel {
         fc.weightx = 1.0;
         fc.insets = new Insets(3, 2, 3, 10);
 
-        addRow(p, lc, fc, 1, "Format:", nameFormatCombo);
+        addRow(p, lc, fc, 2, "Format:", nameFormatCombo);
 
         JButton previewBtn = new JButton("Preview");
         GridBagConstraints bc = new GridBagConstraints();
         bc.gridx = 0;
-        bc.gridy = 2;
+        bc.gridy = 3;
         bc.gridwidth = 2;
         bc.anchor = GridBagConstraints.CENTER;
         bc.insets = new Insets(8, 10, 5, 10);
@@ -536,6 +541,10 @@ public class ImportConfigPanel extends JPanel {
 
     public String getNameFormat() {
         return (String) nameFormatCombo.getSelectedItem();
+    }
+
+    public boolean isAutoAssignIconEnabled() {
+        return autoAssignIconBox.isSelected();
     }
 
     /**

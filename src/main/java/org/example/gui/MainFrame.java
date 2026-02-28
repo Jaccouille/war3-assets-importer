@@ -389,6 +389,7 @@ public class MainFrame {
                 importConfigPanel.getUnitOriginId(),
                 importConfigPanel.isAutoNameUnitsEnabled(),
                 importConfigPanel.getNameFormat(),
+                importConfigPanel.isAutoAssignIconEnabled(),
                 importConfigPanel.getPlacementBounds()  // null when no shape drawn → camera-bounds fallback
         );
 
