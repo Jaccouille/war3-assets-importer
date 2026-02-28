@@ -345,10 +345,10 @@ public class MainFrame {
         try {
             discoveredAssets = discoveryService.discover(modelsFolder);
             LOG.fine("Asset discovery complete: " + discoveredAssets.mdxFiles().size()
-                    + " MDX, " + discoveredAssets.blpFiles().size() + " BLP");
+                    + " MDX, " + discoveredAssets.textureFiles().size() + " textures");
             log(MessageFormat.format(Messages.get("log.foundMdx"), discoveredAssets.mdxFiles().size()));
-            log(MessageFormat.format(Messages.get("log.foundBlp"), discoveredAssets.blpFiles().size()));
-            assetTreePanel.updateTree(discoveredAssets.mdxFiles(), discoveredAssets.blpFiles());
+            log(MessageFormat.format(Messages.get("log.foundTextures"), discoveredAssets.textureFiles().size()));
+            assetTreePanel.updateTree(discoveredAssets.mdxFiles(), discoveredAssets.textureFiles());
         } catch (Exception ex) {
             LOG.log(Level.WARNING, "Asset discovery failed", ex);
             log(MessageFormat.format(Messages.get("log.errorReadingFiles"), ex.getMessage()));
@@ -373,7 +373,7 @@ public class MainFrame {
             // If nothing is checked, import everything
             discoveredAssets.mdxFiles().forEach(r ->
                     selectedFiles.add(modelsFolder.toPath().resolve(r).normalize()));
-            discoveredAssets.blpFiles().forEach(r ->
+            discoveredAssets.textureFiles().forEach(r ->
                     selectedFiles.add(modelsFolder.toPath().resolve(r).normalize()));
         }
 
@@ -463,10 +463,10 @@ public class MainFrame {
     // i18n refresh
     // -------------------------------------------------------------------------
 
-    private void onFolderSelected(List<String> blpRelativePaths) {
+    private void onFolderSelected(List<String> textureRelativePaths) {
         if (modelsFolder == null) return;
-        List<File> files = new ArrayList<>(blpRelativePaths.size());
-        for (String rel : blpRelativePaths) {
+        List<File> files = new ArrayList<>(textureRelativePaths.size());
+        for (String rel : textureRelativePaths) {
             File f = new File(modelsFolder, rel);
             if (f.exists()) files.add(f);
         }

@@ -97,18 +97,18 @@ public class ImportCommand implements Callable<Integer> {
         // Discover assets
         System.out.println("Scanning assets in: " + assetsFolder.getAbsolutePath());
         AssetDiscoveryResult discovered = new AssetDiscoveryService().discover(assetsFolder);
-        System.out.printf("Found %d MDX file(s), %d BLP file(s)%n",
-                discovered.mdxFiles().size(), discovered.blpFiles().size());
+        System.out.printf("Found %d MDX file(s), %d texture file(s)%n",
+                discovered.mdxFiles().size(), discovered.textureFiles().size());
 
         if (discovered.totalFileCount() == 0) {
-            System.err.println("Warning: no MDX or BLP files found in the specified folder.");
+            System.err.println("Warning: no MDX or texture files found in the specified folder.");
             return 0;
         }
 
         // Collect all discovered files as absolute Paths
         Set<Path> allFiles = new LinkedHashSet<>();
         discovered.mdxFiles().forEach(rel -> allFiles.add(assetsFolder.toPath().resolve(rel).normalize()));
-        discovered.blpFiles().forEach(rel -> allFiles.add(assetsFolder.toPath().resolve(rel).normalize()));
+        discovered.textureFiles().forEach(rel -> allFiles.add(assetsFolder.toPath().resolve(rel).normalize()));
 
         // Build options
         ImportOptions opts = new ImportOptions(createUnits, placeUnits, clearUnits, clearAssets, unitDefinition);

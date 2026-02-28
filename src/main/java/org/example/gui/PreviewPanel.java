@@ -210,7 +210,7 @@ public class PreviewPanel extends JPanel {
             // Double-click → show BLP metadata popup
             lbl.addMouseListener(new MouseAdapter() {
                 @Override public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) showBlpInfoDialog(f);
+                    if (e.getClickCount() == 2) showImageInfoDialog(f);
                 }
             });
 
@@ -297,11 +297,18 @@ public class PreviewPanel extends JPanel {
     // -------------------------------------------------------------------------
 
     /**
-     * Opens a dialog showing the BLP image at its natural pixel dimensions together
-     * with file/format metadata (size on disk, dimensions, mipmap levels, format name).
+     * Opens a dialog showing the image at its natural pixel dimensions together with
+     * file/format metadata. Format-specific handling:
+     * <ul>
+     *   <li><b>BLP</b> – uses the BLP ImageReader for mipmap count and format name.</li>
+     *   <li><b>DDS</b> – parses the binary DDS header (dimensions, mipmap count, FourCC
+     *       format). Preview is attempted via {@link ImageIO}; shown as unavailable when the
+     *       codec is missing (DXT-compressed DDS requires an extra plugin).</li>
+     *   <li><b>All others</b> – loaded via {@link ImageIO} (PNG, JPG, BMP, GIF, TGA with
+     *       TwelveMonkeys on the classpath).</li>
+     * </ul>
      */
-    private void showBlpInfoDialog(File file) {
-        // ---- collect metadata + read pixels in one pass ----
+    private void showImageInfoDialog(File file) {
         JPanel infoPanel = new JPanel(new GridBagLayout());
         infoPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
@@ -322,48 +329,85 @@ public class PreviewPanel extends JPanel {
         sep.fill = GridBagConstraints.HORIZONTAL; sep.insets = new Insets(4, 0, 4, 0);
         infoPanel.add(new JSeparator(), sep);
 
+        String ext = getExtension(file.getName());
         BufferedImage[] imgRef = {null};
 
-        try {
-            Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("blp");
-            if (readers.hasNext()) {
-                ImageReader reader = readers.next();
-                try (ImageInputStream iis = ImageIO.createImageInputStream(file)) {
-                    if (iis == null) throw new IOException("Cannot create image stream");
-                    reader.setInput(iis, false, false);
-
-                    int w = reader.getWidth(0);
-                    int h = reader.getHeight(0);
-                    addInfoRow(infoPanel, lc, vc, row[0]++, "Dimensions:", w + " x " + h + " px");
-
-                    try {
-                        int mipmaps = reader.getNumImages(true);
-                        addInfoRow(infoPanel, lc, vc, row[0]++, "Mipmap levels:", String.valueOf(mipmaps));
-                    } catch (IOException ignored) {
-                        addInfoRow(infoPanel, lc, vc, row[0]++, "Mipmap levels:", "N/A");
+        if ("blp".equals(ext)) {
+            // BLP: use the dedicated ImageReader for rich metadata (mipmap levels, format name)
+            try {
+                Iterator<ImageReader> readers = ImageIO.getImageReadersBySuffix("blp");
+                if (readers.hasNext()) {
+                    ImageReader reader = readers.next();
+                    try (ImageInputStream iis = ImageIO.createImageInputStream(file)) {
+                        if (iis == null) throw new IOException("Cannot create image stream");
+                        reader.setInput(iis, false, false);
+                        addInfoRow(infoPanel, lc, vc, row[0]++, "Dimensions:",
+                                reader.getWidth(0) + " x " + reader.getHeight(0) + " px");
+                        try {
+                            addInfoRow(infoPanel, lc, vc, row[0]++, "Mipmap levels:",
+                                    String.valueOf(reader.getNumImages(true)));
+                        } catch (IOException ignored) {
+                            addInfoRow(infoPanel, lc, vc, row[0]++, "Mipmap levels:", "N/A");
+                        }
+                        String fmt = reader.getFormatName();
+                        if (fmt != null) addInfoRow(infoPanel, lc, vc, row[0]++, "Format:", fmt);
+                        try { imgRef[0] = reader.read(0); } catch (Exception ignored) {}
+                    } finally {
+                        reader.dispose();
                     }
-
-                    String fmt = reader.getFormatName();
-                    if (fmt != null) addInfoRow(infoPanel, lc, vc, row[0]++, "Format:", fmt);
-
-                    // Read actual pixels for the image preview
-                    try { imgRef[0] = reader.read(0); } catch (Exception ignored) {}
-                } finally {
-                    reader.dispose();
+                } else {
+                    imgRef[0] = ImageIO.read(file);
+                    if (imgRef[0] != null)
+                        addInfoRow(infoPanel, lc, vc, row[0]++, "Dimensions:",
+                                imgRef[0].getWidth() + " x " + imgRef[0].getHeight() + " px");
+                    addInfoRow(infoPanel, lc, vc, row[0]++, "Note:", "BLP reader not available");
                 }
-            } else {
+            } catch (Exception ex) {
+                addInfoRow(infoPanel, lc, vc, row[0]++, "Error:", ex.getMessage());
+            }
+
+        } else if ("dds".equals(ext)) {
+            // DDS: read the 128-byte binary header to extract metadata without a full codec
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(file)) {
+                byte[] hdr = new byte[128];
+                if (fis.read(hdr) >= 128
+                        && hdr[0] == 'D' && hdr[1] == 'D' && hdr[2] == 'S' && hdr[3] == ' ') {
+                    int height  = readLE32(hdr, 12);
+                    int width   = readLE32(hdr, 16);
+                    int mipmaps = readLE32(hdr, 28);
+                    addInfoRow(infoPanel, lc, vc, row[0]++, "Dimensions:", width + " x " + height + " px");
+                    if (mipmaps > 0)
+                        addInfoRow(infoPanel, lc, vc, row[0]++, "Mipmap levels:", String.valueOf(mipmaps));
+                    // DDPIXELFORMAT starts at offset 76; dwFlags at 80, dwFourCC at 84
+                    int pxFlags = readLE32(hdr, 80);
+                    if ((pxFlags & 0x4) != 0) { // DDPF_FOURCC
+                        addInfoRow(infoPanel, lc, vc, row[0]++, "Format:",
+                                new String(hdr, 84, 4).trim());
+                    } else {
+                        addInfoRow(infoPanel, lc, vc, row[0]++, "Format:",
+                                "Uncompressed " + readLE32(hdr, 88) + "-bit");
+                    }
+                }
+            } catch (Exception ignored) {}
+            // Attempt preview via ImageIO (succeeds only if a DDS codec is on the classpath)
+            try { imgRef[0] = ImageIO.read(file); } catch (Exception ignored) {}
+            if (imgRef[0] == null)
+                addInfoRow(infoPanel, lc, vc, row[0]++, "Preview:",
+                        "DDS compressed format — preview unavailable");
+
+        } else {
+            // Generic: PNG, JPG, TGA (TwelveMonkeys), BMP, GIF, …
+            try {
                 imgRef[0] = ImageIO.read(file);
-                if (imgRef[0] != null) {
+                if (imgRef[0] != null)
                     addInfoRow(infoPanel, lc, vc, row[0]++, "Dimensions:",
                             imgRef[0].getWidth() + " x " + imgRef[0].getHeight() + " px");
-                }
-                addInfoRow(infoPanel, lc, vc, row[0]++, "Note:", "BLP reader not available");
+            } catch (Exception ex) {
+                addInfoRow(infoPanel, lc, vc, row[0]++, "Error:", ex.getMessage());
             }
-        } catch (Exception ex) {
-            addInfoRow(infoPanel, lc, vc, row[0]++, "Error:", ex.getMessage());
         }
 
-        // ---- assemble dialog: image on top (natural size), metadata below ----
+        // ---- assemble dialog: image on top (1:1 pixels, capped at 512), metadata below ----
         JPanel content = new JPanel(new BorderLayout(0, 6));
         content.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
@@ -375,7 +419,6 @@ public class PreviewPanel extends JPanel {
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                     JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             imgScroll.setBorder(null);
-            // Show image at 1:1 pixel ratio; cap the viewport at 512 x 512
             imgScroll.setPreferredSize(new Dimension(
                     Math.min(img.getWidth()  + 4, 512),
                     Math.min(img.getHeight() + 4, 512)));
@@ -387,8 +430,21 @@ public class PreviewPanel extends JPanel {
         JOptionPane.showMessageDialog(
                 SwingUtilities.getWindowAncestor(this),
                 content,
-                "BLP Info - " + file.getName(),
+                "Image Info - " + file.getName(),
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static String getExtension(String filename) {
+        int dot = filename.lastIndexOf('.');
+        return dot >= 0 ? filename.substring(dot + 1).toLowerCase() : "";
+    }
+
+    /** Reads a little-endian 32-bit int from {@code data} at {@code offset}. */
+    private static int readLE32(byte[] data, int offset) {
+        return (data[offset]     & 0xFF)
+             | ((data[offset + 1] & 0xFF) << 8)
+             | ((data[offset + 2] & 0xFF) << 16)
+             | ((data[offset + 3] & 0xFF) << 24);
     }
 
     /** Adds a bold label + value row to a GridBagLayout panel. */

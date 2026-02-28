@@ -13,6 +13,7 @@ application {
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
+    maven { url 'http://maven.nikr.net/'; allowInsecureProtocol = true }
 }
 
 dependencies {
@@ -34,6 +35,12 @@ dependencies {
 
     // Modern Swing Look & Feel (FlatLight, FlatDark, FlatIntelliJ, FlatDarcula)
     implementation 'com.formdev:flatlaf:3.5.1'
+
+    // TGA (and other formats) support for ImageIO
+    implementation 'com.twelvemonkeys.imageio:imageio-tga:3.10.1'
+
+    // DDS support for ImageIO
+    implementation 'net.nikr:dds:1.0.0'
 }
 
 test {

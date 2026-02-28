@@ -37,8 +37,8 @@ public class AssetTreePanel extends JPanel {
 
     /** Callback fired when the user focuses a folder node in the tree. */
     public interface FolderSelectionListener {
-        /** @param blpRelativePaths relative paths of BLP files under the folder (stripped of category prefix). */
-        void onFolderSelected(List<String> blpRelativePaths);
+        /** @param textureRelativePaths relative paths of texture files under the folder (stripped of category prefix). */
+        void onFolderSelected(List<String> textureRelativePaths);
     }
 
     private final JCheckBoxTree assetTree;
@@ -78,7 +78,7 @@ public class AssetTreePanel extends JPanel {
                 if (slash >= 0) rel = rel.substring(slash + 1);
                 if (selectionListener != null) selectionListener.onAssetSelected(rel);
             } else {
-                if (folderListener != null) folderListener.onFolderSelected(collectBlpPathsUnder(node));
+                if (folderListener != null) folderListener.onFolderSelected(collectTexturePathsUnder(node));
             }
             // Update ImportConfigPanel with currently selected MDX filenames
             updateImportConfigPanel();
@@ -113,9 +113,9 @@ public class AssetTreePanel extends JPanel {
      * Rebuilds the tree from the given file lists.
      * Called after the user picks a models folder.
      */
-    public void updateTree(List<String> mdxFiles, List<String> blpFiles) {
+    public void updateTree(List<String> mdxFiles, List<String> textureFiles) {
         JCheckBoxTreeNode mdxNode = buildFolderTree(Messages.get("tree.mdx"), mdxFiles);
-        JCheckBoxTreeNode blpNode = buildFolderTree(Messages.get("tree.blp"), blpFiles);
+        JCheckBoxTreeNode blpNode = buildFolderTree(Messages.get("tree.textures"), textureFiles);
 
         TreeNodeData mdxData = (TreeNodeData) mdxNode.getUserObject();
         TreeNodeData blpData = (TreeNodeData) blpNode.getUserObject();
@@ -188,7 +188,7 @@ public class AssetTreePanel extends JPanel {
      * used when keyboard focus moves via UP/DOWN arrow keys.
      * <ul>
      *   <li>Leaf nodes → {@link AssetSelectionListener#onAssetSelected}</li>
-     *   <li>Folder nodes → {@link FolderSelectionListener#onFolderSelected} with all BLP files under it</li>
+     *   <li>Folder nodes → {@link FolderSelectionListener#onFolderSelected} with all texture files under it</li>
      * </ul>
      */
     private void notifyFocusedRowChange(int row) {
@@ -204,7 +204,7 @@ public class AssetTreePanel extends JPanel {
             if (slash >= 0) rel = rel.substring(slash + 1);
             selectionListener.onAssetSelected(rel);
         } else {
-            if (folderListener != null) folderListener.onFolderSelected(collectBlpPathsUnder(node));
+            if (folderListener != null) folderListener.onFolderSelected(collectTexturePathsUnder(node));
         }
     }
 
@@ -374,22 +374,26 @@ public class AssetTreePanel extends JPanel {
 
     /**
      * Collects the relative paths (category prefix already stripped) of all
-     * BLP leaf files that are descendants of {@code node}.
+     * texture leaf files that are descendants of {@code node}.
      */
-    private List<String> collectBlpPathsUnder(JCheckBoxTreeNode node) {
+    private List<String> collectTexturePathsUnder(JCheckBoxTreeNode node) {
         List<String> result = new ArrayList<>();
-        collectBlpPathsRecursive(node, result);
+        collectTexturePathsRecursive(node, result);
         return result;
     }
 
-    private void collectBlpPathsRecursive(JCheckBoxTreeNode node, List<String> result) {
+    private static final java.util.Set<String> TEXTURE_EXTENSIONS = new java.util.HashSet<>(
+            java.util.Arrays.asList(".blp", ".dds", ".tga", ".png", ".jpg", ".jpeg", ".bmp", ".gif"));
+
+    private void collectTexturePathsRecursive(JCheckBoxTreeNode node, List<String> result) {
         if (node.isLeaf()) {
             TreeNodeData data = (TreeNodeData) node.getUserObject();
             if (data.isFile()) {
                 String rel = data.relativePath();
                 int slash = rel.indexOf('/');
                 if (slash >= 0) rel = rel.substring(slash + 1);
-                if (rel.toLowerCase().endsWith(".blp")) {
+                int dot = rel.lastIndexOf('.');
+                if (dot >= 0 && TEXTURE_EXTENSIONS.contains(rel.substring(dot).toLowerCase())) {
                     result.add(rel);
                 }
             }
@@ -398,7 +402,7 @@ public class AssetTreePanel extends JPanel {
         for (int i = 0; i < node.getChildCount(); i++) {
             Object child = node.getChildAt(i);
             if (child instanceof JCheckBoxTreeNode cb) {
-                collectBlpPathsRecursive(cb, result);
+                collectTexturePathsRecursive(cb, result);
             }
         }
     }

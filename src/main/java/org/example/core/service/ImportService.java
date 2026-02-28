@@ -198,15 +198,16 @@ public class ImportService {
         HashMap<String, File> insertedTextures = new HashMap<>();
 
         // Build a lookup from model base name (lowercase) -> BTN icon filename.
-        // Icons are BLP files whose name starts with "BTN"; the rest of the name (minus extension)
+        // Icons are texture files whose name starts with "BTN"; the rest of the name (minus extension)
         // is matched against the MDX filename (minus extension).
         Map<String, String> iconByModelName = new HashMap<>();
         if (options.getAutoAssignIcon()) {
             for (Path p : selectedFiles) {
                 String name = p.toFile().getName();
-                if (name.toLowerCase().startsWith("btn") && name.toLowerCase().endsWith(".blp")) {
-                    String key = name.substring(3).replaceAll("(?i)\\.blp$", "").toLowerCase();
-                    iconByModelName.put(key, name); // BLPs are stored flat, so just the filename
+                if (name.toLowerCase().startsWith("btn") && isTextureFile(name)) {
+                    int dot = name.lastIndexOf('.');
+                    String key = name.substring(3, dot).toLowerCase();
+                    iconByModelName.put(key, name); // textures are stored flat, so just the filename
                 }
             }
         }
@@ -252,8 +253,8 @@ public class ImportService {
                 continue;
             }
 
-            // BLP textures are inserted by filename only (flat namespace in WC3)
-            if (f.getName().toLowerCase().endsWith(".blp")) {
+            // Texture files are inserted by filename only (flat namespace in WC3)
+            if (isTextureFile(f.getName())) {
                 insertedFilePath = f.getName();
             }
 
@@ -358,6 +359,14 @@ public class ImportService {
             obj.write(out);
         }
         return baos.toByteArray();
+    }
+
+    private static final java.util.Set<String> TEXTURE_EXTENSIONS = new java.util.HashSet<>(
+            java.util.Arrays.asList(".blp", ".dds", ".tga", ".png", ".jpg", ".jpeg", ".bmp", ".gif"));
+
+    private static boolean isTextureFile(String filename) {
+        int dot = filename.lastIndexOf('.');
+        return dot >= 0 && TEXTURE_EXTENSIONS.contains(filename.substring(dot).toLowerCase());
     }
 
     private byte[] serializeDooUnits(DOO_UNITS obj) throws Exception {

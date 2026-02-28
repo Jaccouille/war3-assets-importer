@@ -2,6 +2,7 @@ package org.example;
 
 import com.hiveworkshop.blizzard.blp.BLPReaderSpi;
 import com.hiveworkshop.blizzard.blp.BLPWriterSpi;
+import net.nikr.dds.DDSImageReaderSpi;
 import org.example.cli.ImportCommand;
 import org.example.gui.MainFrame;
 import org.example.gui.settings.AppearanceConfig;
@@ -51,5 +52,6 @@ public class Main {
         IIORegistry registry = IIORegistry.getDefaultInstance();
         registry.registerServiceProvider(new BLPReaderSpi());
         registry.registerServiceProvider(new BLPWriterSpi());
+        registry.registerServiceProvider(new DDSImageReaderSpi());
     }
 }
