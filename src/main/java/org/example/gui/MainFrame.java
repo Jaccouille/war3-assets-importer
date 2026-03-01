@@ -2,6 +2,7 @@ package org.example.gui;
 
 import org.example.core.model.AssetDiscoveryResult;
 import org.example.core.model.ImportOptions;
+import org.example.gui.MapPreviewPanel;
 import org.example.core.model.MapMetadata;
 import org.example.core.model.UnitEntry;
 import org.example.core.service.AssetDiscoveryService;
@@ -81,6 +82,7 @@ public class MainFrame {
     private JButton importModelsButton;
     private JButton processButton;
     private JButton settingsButton;
+    private JButton helpButton;
 
     // Status bar
     private JProgressBar statusBar;
@@ -133,12 +135,14 @@ public class MainFrame {
         importModelsButton = new JButton(Messages.get("button.importModels"));
         processButton = new JButton(Messages.get("button.process"));
         settingsButton = new JButton(Messages.get("button.settings"));
+        helpButton = new JButton(Messages.get("button.help"));
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         buttonPanel.add(openMapButton);
         buttonPanel.add(importModelsButton);
         buttonPanel.add(processButton);
         buttonPanel.add(settingsButton);
+        buttonPanel.add(helpButton);
 
         // ---- Status bar ----
         statusBar = new JProgressBar(0, 100);
@@ -167,18 +171,18 @@ public class MainFrame {
 
         // Log panel with titled border
         JPanel logPanel = new JPanel(new BorderLayout());
-        logPanel.setBorder(BorderFactory.createTitledBorder("Logs"));
+        logPanel.setBorder(BorderFactory.createTitledBorder(Messages.get("tab.logs")));
         logPanel.add(new JScrollPane(logArea), BorderLayout.CENTER);
 
         // Tabbed pane — Map Description is always visible above, so only 3 tabs here
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Assets", assetPreviewPane);
-        tabbedPane.addTab("Import Configuration", importConfigPanel);
-        tabbedPane.addTab("Logs", logPanel);
+        tabbedPane.addTab(Messages.get("tab.assets"), assetPreviewPane);
+        tabbedPane.addTab(Messages.get("tab.importConfig"), importConfigPanel);
+        tabbedPane.addTab(Messages.get("tab.logs"), logPanel);
 
         // Wrap Map Description with a titled border
         JPanel mapDescPanel = new JPanel(new BorderLayout());
-        mapDescPanel.setBorder(BorderFactory.createTitledBorder("Map Description"));
+        mapDescPanel.setBorder(BorderFactory.createTitledBorder(Messages.get("panel.mapDescription")));
         mapDescPanel.add(mapDescriptionPanel, BorderLayout.CENTER);
         mapDescPanel.setMinimumSize(new Dimension(0, 200)); // allow the divider to be dragged up
 
@@ -205,6 +209,7 @@ public class MainFrame {
         importModelsButton.addActionListener(this::onImportModels);
         processButton.addActionListener(this::onProcess);
         settingsButton.addActionListener(this::onOpenSettings);
+        helpButton.addActionListener(e -> new HelpDialog(frame).setVisible(true));
 
         frame.setVisible(true);
     }
@@ -412,6 +417,12 @@ public class MainFrame {
                     selectedFiles.add(modelsFolder.toPath().resolve(r).normalize()));
         }
 
+        // Convert GUI enum → core enum by name
+        ImportOptions.PlacingOrder placingOrder =
+                importConfigPanel.getPlacingOrder() == MapPreviewPanel.PlacingOrder.COLUMNS
+                        ? ImportOptions.PlacingOrder.COLUMNS
+                        : ImportOptions.PlacingOrder.ROWS;
+
         ImportOptions opts = new ImportOptions(
                 importConfigPanel.isCreateUnitsSelected(),
                 importConfigPanel.isPlaceUnitsSelected(),
@@ -426,6 +437,7 @@ public class MainFrame {
                 importConfigPanel.getNameFormat(),
                 importConfigPanel.isAutoAssignIconEnabled(),
                 importConfigPanel.isFlattenPathsEnabled(),
+                placingOrder,
                 importConfigPanel.getPlacementBounds()  // null when no shape drawn → camera-bounds fallback
         );
 
@@ -515,6 +527,7 @@ public class MainFrame {
         importModelsButton.setText(Messages.get("button.importModels"));
         processButton.setText(Messages.get("button.process"));
         settingsButton.setText(Messages.get("button.settings"));
+        helpButton.setText(Messages.get("button.help"));
         mapDescriptionPanel.applyI18n();
         assetTreePanel.applyI18n();
         previewPanel.applyI18n();

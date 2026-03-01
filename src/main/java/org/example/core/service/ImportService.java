@@ -223,19 +223,20 @@ public class ImportService {
         // Prefer the user-drawn shape bounds (world coords + world spacing already computed).
         // Fall back to full camera bounds with the raw screen-pixel spacing when no shape was drawn.
         ImportOptions.PlacementBounds pb = options.getPlacementBounds();
+        ImportOptions.PlacingOrder placingOrder = options.getPlacingOrder();
         UnitPlacementGrid placer;
         if (pb != null) {
             placer = new UnitPlacementGrid(pb.minX(), pb.maxX(), pb.minY(), pb.maxY(),
-                    pb.spacingX(), pb.spacingY());
-            log.accept(String.format("Using drawn placement area: (%.0f,%.0f)→(%.0f,%.0f), spacing=(%.1f,%.1f)",
-                    pb.minX(), pb.minY(), pb.maxX(), pb.maxY(), pb.spacingX(), pb.spacingY()));
+                    pb.spacingX(), pb.spacingY(), placingOrder);
+            log.accept(String.format("Using drawn placement area: (%.0f,%.0f)→(%.0f,%.0f), spacing=(%.1f,%.1f), order=%s",
+                    pb.minX(), pb.minY(), pb.maxX(), pb.maxY(), pb.spacingX(), pb.spacingY(), placingOrder));
         } else {
             Coords2DF topLeft = CameraBounds.getInstance().getTopLeft();
             Coords2DF bottomRight = CameraBounds.getInstance().getBottomRight();
             float spacingX = (float) options.getUnitSpacingX();
             float spacingY = (float) options.getUnitSpacingY();
             placer = (topLeft != null && bottomRight != null)
-                    ? new UnitPlacementGrid(topLeft, bottomRight, spacingX, spacingY)
+                    ? new UnitPlacementGrid(topLeft, bottomRight, spacingX, spacingY, placingOrder)
                     : null;
             log.accept("No placement shape drawn — falling back to camera bounds.");
         }

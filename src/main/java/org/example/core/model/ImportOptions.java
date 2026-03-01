@@ -2,6 +2,8 @@ package org.example.core.model;
 
 public final class ImportOptions {
 
+    public enum PlacingOrder { ROWS, COLUMNS }
+
     /**
      * World-space placement region derived from a shape drawn on the map preview.
      *
@@ -29,12 +31,13 @@ public final class ImportOptions {
     private final boolean autoAssignIcon;
     /** When true, assets are stored in the MPQ under their filename only (no subfolder path). */
     private final boolean flattenPaths;
+    private final PlacingOrder placingOrder;
     /** Optional drawn-shape bounds in world space; {@code null} = fall back to camera bounds. */
     private final PlacementBounds placementBounds;
 
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
                          boolean clearAssets, String unitOriginId) {
-        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", false, false, null);
+        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", false, false, PlacingOrder.ROWS, null);
     }
 
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
@@ -43,6 +46,7 @@ public final class ImportOptions {
                          String unitOriginId,
                          boolean autoNameUnits, String nameFormat,
                          boolean autoAssignIcon, boolean flattenPaths,
+                         PlacingOrder placingOrder,
                          PlacementBounds placementBounds) {
         this.createUnits = createUnits;
         this.placeUnits = placeUnits;
@@ -57,6 +61,7 @@ public final class ImportOptions {
         this.nameFormat = nameFormat;
         this.autoAssignIcon = autoAssignIcon;
         this.flattenPaths = flattenPaths;
+        this.placingOrder = placingOrder;
         this.placementBounds = placementBounds;
     }
 
@@ -114,6 +119,10 @@ public final class ImportOptions {
 
     public boolean getFlattenPaths() {
         return flattenPaths;
+    }
+
+    public PlacingOrder getPlacingOrder() {
+        return placingOrder;
     }
 
     /**

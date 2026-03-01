@@ -85,12 +85,12 @@ public class ImportConfigPanel extends JPanel {
         placeUnitsBox = new JCheckBox();
         clearUnitsBox = new JCheckBox();
         clearAssetsBox = new JCheckBox();
-        flattenPathsBox = new JCheckBox("Keep filename only (no subfolder path)");
+        flattenPathsBox = new JCheckBox(Messages.get("checkbox.flattenPaths"));
         unitScalingSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.1, 10.0, 0.1));
 
         // ---- Unit naming fields ----
-        autoNameUnitsBox = new JCheckBox("Auto-name from MDX filename");
-        autoAssignIconBox = new JCheckBox("Auto-assign BTN icon");
+        autoNameUnitsBox = new JCheckBox(Messages.get("checkbox.autoNameUnits"));
+        autoAssignIconBox = new JCheckBox(Messages.get("checkbox.autoAssignIcon"));
         nameFormatCombo = new JComboBox<>(new String[]{
                 "Space Separated (keep case)",
                 "Space Separated",
@@ -99,6 +99,45 @@ public class ImportConfigPanel extends JPanel {
                 "UPPER_CASE"
         });
 
+        // ---- Tooltips ----
+        createUnitsBox.setToolTipText("<html>Add a custom unit definition to the map for each selected MDX model.<br>"
+                + "Each unit will appear as a new entry in the Object Editor (W3U file).</html>");
+        placeUnitsBox.setToolTipText("<html>Place the created units on the terrain.<br>"
+                + "Draw a rectangle on the map preview to define the placement area,<br>"
+                + "or leave it blank to use the full camera-bounded map area.</html>");
+        clearUnitsBox.setToolTipText("<html>Remove all existing unit placements from the map before importing.<br>"
+                + "Use this to start fresh and avoid duplicates on repeated imports.</html>");
+        clearAssetsBox.setToolTipText("<html>Remove all previously imported assets from the map archive<br>"
+                + "before adding the new selection. Useful for replacing an old import without leftover files.</html>");
+        flattenPathsBox.setToolTipText("<html>When checked, assets are stored at the root of the MPQ archive<br>"
+                + "(e.g. <b>Infantry/soldier.mdx</b> becomes <b>soldier.mdx</b>).<br>"
+                + "Command-button textures (BTN*/DISBTN*) always use their canonical WC3 path<br>"
+                + "regardless of this setting.</html>");
+        unitScalingSpinner.setToolTipText("<html>Scale factor applied to the model size of all created units.<br>"
+                + "1.0 = original model size, 2.0 = double size.</html>");
+        unitOriginField.setToolTipText("<html>Base unit type ID used as the template for created units<br>"
+                + "(e.g. <b>hfoo</b> for Human Footman). The new units inherit stats from this type.<br>"
+                + "Type to filter existing map units.</html>");
+        unitAngleSpinner.setToolTipText("<html>Facing direction of placed units in degrees.<br>"
+                + "0\u00b0 = East &nbsp; 90\u00b0 = North &nbsp; 180\u00b0 = West &nbsp; 270\u00b0 = South (default WC3 camera view).</html>");
+        unitSpacingXSpinner.setToolTipText("<html>Horizontal gap between units on the placement grid,<br>"
+                + "measured in pixels relative to the displayed map image.</html>");
+        unitSpacingYSpinner.setToolTipText("<html>Vertical gap between units on the placement grid,<br>"
+                + "measured in pixels relative to the displayed map image.</html>");
+        placingOrderCombo.setToolTipText("<html>Order in which units fill the placement grid:<br>"
+                + "left-to-right row by row, or top-to-bottom column by column.</html>");
+        autoNameUnitsBox.setToolTipText("<html>Automatically set each unit's display name from its MDX filename.<br>"
+                + "Use the Format dropdown to choose how the filename is converted.</html>");
+        autoAssignIconBox.setToolTipText("<html>If a BTN* texture matching the MDX filename is found<br>"
+                + "among the selected assets, automatically assign it as the unit's command-card icon.</html>");
+        nameFormatCombo.setToolTipText("<html>How the MDX filename is converted into a display name.<br>"
+                + "Example — <i>InfantryAmerican</i>:<br>"
+                + "&nbsp;&nbsp;Space Separated (keep case): <b>Infantry American</b><br>"
+                + "&nbsp;&nbsp;Space Separated: <b>Infantry american</b><br>"
+                + "&nbsp;&nbsp;camelCase: <b>infantryAmerican</b><br>"
+                + "&nbsp;&nbsp;snake_case: <b>infantry_american</b><br>"
+                + "&nbsp;&nbsp;UPPER_CASE: <b>INFANTRY_AMERICAN</b></html>");
+
         // ---- Output path field ----
         outputPathField = new JTextField();
         outputPathField.setToolTipText("Destination .w3x/.w3m file");
@@ -106,10 +145,10 @@ public class ImportConfigPanel extends JPanel {
         // ---- Capacity status bar ----
         capacityIndicator = new JLabel();
         capacityIndicator.setPreferredSize(new Dimension(16, 16));
-        capacityLabel = new JLabel("Draw a shape to place units");
+        capacityLabel = new JLabel(Messages.get("status.drawShape"));
         helpButton = new JButton("?");
         helpButton.setMargin(new Insets(1, 5, 1, 5));
-        helpButton.setToolTipText("Help");
+        helpButton.setToolTipText(Messages.get("button.help"));
         helpButton.addActionListener(e -> showCapacityHelp());
 
         // Set initial indicator color (gray)
@@ -194,7 +233,7 @@ public class ImportConfigPanel extends JPanel {
 
     private JPanel buildCreationSection() {
         JPanel p = new JPanel(new GridBagLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Unit Creation"));
+        p.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitCreation")));
 
         GridBagConstraints lc = new GridBagConstraints();
         lc.gridx = 0;
@@ -234,14 +273,14 @@ public class ImportConfigPanel extends JPanel {
         cc.gridy = row++;
         p.add(flattenPathsBox, cc);
 
-        addRow(p, lc, fc, row++, "Unit Scaling:", unitScalingSpinner);
+        addRow(p, lc, fc, row++, Messages.get("label.unitScaling"), unitScalingSpinner);
 
         return p;
     }
 
     private JPanel buildPlacementSection() {
         JPanel p = new JPanel(new GridBagLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Unit Placement"));
+        p.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitPlacement")));
 
         GridBagConstraints lc = new GridBagConstraints();
         lc.gridx = 0;
@@ -255,19 +294,18 @@ public class ImportConfigPanel extends JPanel {
         fc.insets = new Insets(5, 2, 3, 10);
 
         int row = 0;
-        addRow(p, lc, fc, row++, "Unit Origin ID:", unitOriginField);
-        addRow(p, lc, fc, row++, "Unit Angle (\u00B0):", unitAngleSpinner);
-        addRow(p, lc, fc, row++, "Spacing X:", unitSpacingXSpinner);
-        addRow(p, lc, fc, row++, "Spacing Y:", unitSpacingYSpinner);
-
-        addRow(p, lc, fc, row++, "Placing Order:", placingOrderCombo);
+        addRow(p, lc, fc, row++, Messages.get("label.unitOriginId"), unitOriginField);
+        addRow(p, lc, fc, row++, Messages.get("label.unitAngle"), unitAngleSpinner);
+        addRow(p, lc, fc, row++, Messages.get("label.spacingX"), unitSpacingXSpinner);
+        addRow(p, lc, fc, row++, Messages.get("label.spacingY"), unitSpacingYSpinner);
+        addRow(p, lc, fc, row++, Messages.get("label.placingOrder"), placingOrderCombo);
 
         return p;
     }
 
     private JPanel buildNamingSection() {
         JPanel p = new JPanel(new GridBagLayout());
-        p.setBorder(BorderFactory.createTitledBorder("Unit Naming"));
+        p.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitNaming")));
 
         GridBagConstraints cc = new GridBagConstraints();
         cc.gridx = 0;
@@ -291,9 +329,9 @@ public class ImportConfigPanel extends JPanel {
         fc.weightx = 1.0;
         fc.insets = new Insets(3, 2, 3, 10);
 
-        addRow(p, lc, fc, 2, "Format:", nameFormatCombo);
+        addRow(p, lc, fc, 2, Messages.get("label.nameFormat"), nameFormatCombo);
 
-        JButton previewBtn = new JButton("Preview");
+        JButton previewBtn = new JButton(Messages.get("button.preview"));
         GridBagConstraints bc = new GridBagConstraints();
         bc.gridx = 0;
         bc.gridy = 3;
@@ -347,7 +385,7 @@ public class ImportConfigPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
 
         // ---- Output path row (full width above the map image) ----
-        JButton browseBtn = new JButton("Browse…");
+        JButton browseBtn = new JButton(Messages.get("button.browse"));
         browseBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             String current = outputPathField.getText().trim();
@@ -360,12 +398,12 @@ public class ImportConfigPanel extends JPanel {
 
         JPanel outputRow = new JPanel(new BorderLayout(5, 0));
         outputRow.setBorder(BorderFactory.createEmptyBorder(4, 4, 2, 4));
-        outputRow.add(new JLabel("Output: "), BorderLayout.WEST);
+        outputRow.add(new JLabel(Messages.get("label.output") + " "), BorderLayout.WEST);
         outputRow.add(outputPathField, BorderLayout.CENTER);
         outputRow.add(browseBtn, BorderLayout.EAST);
 
         // ---- Toolbar (Clear button) ----
-        JButton clearBtn = new JButton("Clear");
+        JButton clearBtn = new JButton(Messages.get("button.clear"));
         clearBtn.addActionListener(e -> mapPreviewPanel.clearShape());
 
         JToolBar toolbar = new JToolBar();
@@ -407,16 +445,18 @@ public class ImportConfigPanel extends JPanel {
      */
     private void updateCapacityStatus(int placed, int total, int capacity) {
         if (total == 0) {
-            capacityLabel.setText("No MDX files selected");
+            capacityLabel.setText(Messages.get("status.noMdxSelected"));
             updateIndicatorColor(Color.GRAY);
         } else if (capacity == 0) {
-            capacityLabel.setText("Draw a shape to place units");
+            capacityLabel.setText(Messages.get("status.drawShape"));
             updateIndicatorColor(Color.GRAY);
         } else if (capacity >= total) {
-            capacityLabel.setText("Units: " + total + " / " + total + "  (capacity: " + capacity + ")");
+            capacityLabel.setText(java.text.MessageFormat.format(
+                    Messages.get("status.capacity"), total, total, capacity));
             updateIndicatorColor(new Color(60, 180, 75));  // green
         } else {
-            capacityLabel.setText("Units: " + capacity + " / " + total + "  (capacity: " + capacity + ")");
+            capacityLabel.setText(java.text.MessageFormat.format(
+                    Messages.get("status.capacityOver"), capacity, total, capacity));
             updateIndicatorColor(new Color(220, 50, 50));  // red
         }
     }

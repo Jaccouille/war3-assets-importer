@@ -1,6 +1,7 @@
 package org.example.core.util;
 
 import net.moonlightflower.wc3libs.dataTypes.app.Coords2DF;
+import org.example.core.model.ImportOptions;
 
 import java.util.logging.Logger;
 
@@ -23,13 +24,23 @@ public class UnitPlacementGrid {
     private float currentX;
     private float currentY;
     private int unitsPlaced;
+    private final boolean columnsFirst;
 
     public UnitPlacementGrid(Coords2DF topLeft, Coords2DF bottomRight, float stepX, float stepY) {
         this(topLeft.getX().getVal(),
              bottomRight.getX().getVal(),
              bottomRight.getY().getVal(),
              topLeft.getY().getVal(),
-             stepX, stepY);
+             stepX, stepY, ImportOptions.PlacingOrder.ROWS);
+    }
+
+    public UnitPlacementGrid(Coords2DF topLeft, Coords2DF bottomRight, float stepX, float stepY,
+                              ImportOptions.PlacingOrder order) {
+        this(topLeft.getX().getVal(),
+             bottomRight.getX().getVal(),
+             bottomRight.getY().getVal(),
+             topLeft.getY().getVal(),
+             stepX, stepY, order);
     }
 
     /**
@@ -41,23 +52,25 @@ public class UnitPlacementGrid {
      * @param maxY     northern boundary (largest Y in WC3 world coords)
      * @param stepX    horizontal spacing between units (world units)
      * @param stepY    vertical spacing between units (world units)
+     * @param order    whether to fill row-by-row or column-by-column
      */
     public UnitPlacementGrid(float minX, float maxX, float minY, float maxY,
-                              float stepX, float stepY) {
+                              float stepX, float stepY, ImportOptions.PlacingOrder order) {
         this.startX = minX;
         this.startY = maxY;  // start from the north (high Y)
         this.endX   = maxX;
         this.endY   = minY;  // stop at the south (low Y)
         this.stepX  = stepX;
         this.stepY  = stepY;
+        this.columnsFirst = (order == ImportOptions.PlacingOrder.COLUMNS);
 
         this.currentX = startX;
         this.currentY = startY;
         this.unitsPlaced = 0;
 
         LOG.fine(String.format(
-                "UnitPlacementGrid created: bounds=(%.0f,%.0f)→(%.0f,%.0f) step=(%.1f,%.1f) capacity≈%d",
-                startX, startY, endX, endY, stepX, stepY,
+                "UnitPlacementGrid created: bounds=(%.0f,%.0f)→(%.0f,%.0f) step=(%.1f,%.1f) order=%s capacity≈%d",
+                startX, startY, endX, endY, stepX, stepY, order,
                 (int) ((endX - startX) / stepX + 1) * (int) ((startY - endY) / stepY + 1)));
     }
 
@@ -65,22 +78,35 @@ public class UnitPlacementGrid {
      * Returns the next grid position, or {@code null} if the grid is exhausted.
      */
     public Coords2DF nextPosition() {
-        if (currentY < endY) {
-            LOG.fine("UnitPlacementGrid exhausted after " + unitsPlaced + " unit(s)");
-            return null;
-        }
-
-        Coords2DF pos = new Coords2DF(currentX, currentY);
-        LOG.finest(String.format("nextPosition: placing unit %d at (%.1f, %.1f)", unitsPlaced + 1, currentX, currentY));
-
-        currentX += stepX;
-        if (currentX > endX) {
-            currentX = startX;
+        if (columnsFirst) {
+            if (currentX > endX) {
+                LOG.fine("UnitPlacementGrid exhausted after " + unitsPlaced + " unit(s)");
+                return null;
+            }
+            Coords2DF pos = new Coords2DF(currentX, currentY);
+            LOG.finest(String.format("nextPosition: placing unit %d at (%.1f, %.1f)", unitsPlaced + 1, currentX, currentY));
             currentY -= stepY;
+            if (currentY < endY) {
+                currentY = startY;
+                currentX += stepX;
+            }
+            unitsPlaced++;
+            return pos;
+        } else {
+            if (currentY < endY) {
+                LOG.fine("UnitPlacementGrid exhausted after " + unitsPlaced + " unit(s)");
+                return null;
+            }
+            Coords2DF pos = new Coords2DF(currentX, currentY);
+            LOG.finest(String.format("nextPosition: placing unit %d at (%.1f, %.1f)", unitsPlaced + 1, currentX, currentY));
+            currentX += stepX;
+            if (currentX > endX) {
+                currentX = startX;
+                currentY -= stepY;
+            }
+            unitsPlaced++;
+            return pos;
         }
-
-        unitsPlaced++;
-        return pos;
     }
 
     public int getUnitsPlaced() {
