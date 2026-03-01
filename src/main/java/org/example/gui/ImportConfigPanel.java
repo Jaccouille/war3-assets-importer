@@ -51,8 +51,28 @@ public class ImportConfigPanel extends JPanel {
 
     // ---- Unit naming fields ----
     private final JCheckBox autoNameUnitsBox;
-    private final JComboBox<String> nameFormatCombo;
+    private final JComboBox<NameFormatItem> nameFormatCombo;
     private final JCheckBox autoAssignIconBox;
+
+    // ---- Section panels (stored for i18n border refresh) ----
+    private JPanel creationSection;
+    private JPanel placementSection;
+    private JPanel namingSection;
+
+    // ---- Row labels (stored for i18n refresh) ----
+    private final JLabel unitScalingLabel  = new JLabel();
+    private final JLabel unitOriginIdLabel = new JLabel();
+    private final JLabel unitAngleLabel    = new JLabel();
+    private final JLabel spacingXLabel     = new JLabel();
+    private final JLabel spacingYLabel     = new JLabel();
+    private final JLabel placingOrderLabel = new JLabel();
+    private final JLabel nameFormatLabel   = new JLabel();
+    private JLabel outputLabel;
+
+    // ---- Sub-panel buttons (stored for i18n refresh) ----
+    private JButton previewBtn;
+    private JButton clearBtn;
+    private JButton browseBtn;
 
     // ---- Capacity status bar ----
     private final JLabel capacityIndicator;
@@ -91,52 +111,29 @@ public class ImportConfigPanel extends JPanel {
         // ---- Unit naming fields ----
         autoNameUnitsBox = new JCheckBox(Messages.get("checkbox.autoNameUnits"));
         autoAssignIconBox = new JCheckBox(Messages.get("checkbox.autoAssignIcon"));
-        nameFormatCombo = new JComboBox<>(new String[]{
-                "Space Separated (keep case)",
-                "Space Separated",
-                "camelCase",
-                "snake_case",
-                "UPPER_CASE"
+        nameFormatCombo = new JComboBox<>(new NameFormatItem[]{
+                new NameFormatItem("Space Separated (keep case)", "nameFormat.spaceSeparatedKeepCase"),
+                new NameFormatItem("Space Separated",             "nameFormat.spaceSeparated"),
+                new NameFormatItem("camelCase",                   "nameFormat.camelCase"),
+                new NameFormatItem("snake_case",                  "nameFormat.snakeCase"),
+                new NameFormatItem("UPPER_CASE",                  "nameFormat.upperCase"),
         });
 
-        // ---- Tooltips ----
-        createUnitsBox.setToolTipText("<html>Add a custom unit definition to the map for each selected MDX model.<br>"
-                + "Each unit will appear as a new entry in the Object Editor (W3U file).</html>");
-        placeUnitsBox.setToolTipText("<html>Place the created units on the terrain.<br>"
-                + "Draw a rectangle on the map preview to define the placement area,<br>"
-                + "or leave it blank to use the full camera-bounded map area.</html>");
-        clearUnitsBox.setToolTipText("<html>Remove all existing unit placements from the map before importing.<br>"
-                + "Use this to start fresh and avoid duplicates on repeated imports.</html>");
-        clearAssetsBox.setToolTipText("<html>Remove all previously imported assets from the map archive<br>"
-                + "before adding the new selection. Useful for replacing an old import without leftover files.</html>");
-        flattenPathsBox.setToolTipText("<html>When checked, assets are stored at the root of the MPQ archive<br>"
-                + "(e.g. <b>Infantry/soldier.mdx</b> becomes <b>soldier.mdx</b>).<br>"
-                + "Command-button textures (BTN*/DISBTN*) always use their canonical WC3 path<br>"
-                + "regardless of this setting.</html>");
-        unitScalingSpinner.setToolTipText("<html>Scale factor applied to the model size of all created units.<br>"
-                + "1.0 = original model size, 2.0 = double size.</html>");
-        unitOriginField.setToolTipText("<html>Base unit type ID used as the template for created units<br>"
-                + "(e.g. <b>hfoo</b> for Human Footman). The new units inherit stats from this type.<br>"
-                + "Type to filter existing map units.</html>");
-        unitAngleSpinner.setToolTipText("<html>Facing direction of placed units in degrees.<br>"
-                + "0\u00b0 = East &nbsp; 90\u00b0 = North &nbsp; 180\u00b0 = West &nbsp; 270\u00b0 = South (default WC3 camera view).</html>");
-        unitSpacingXSpinner.setToolTipText("<html>Horizontal gap between units on the placement grid,<br>"
-                + "measured in pixels relative to the displayed map image.</html>");
-        unitSpacingYSpinner.setToolTipText("<html>Vertical gap between units on the placement grid,<br>"
-                + "measured in pixels relative to the displayed map image.</html>");
-        placingOrderCombo.setToolTipText("<html>Order in which units fill the placement grid:<br>"
-                + "left-to-right row by row, or top-to-bottom column by column.</html>");
-        autoNameUnitsBox.setToolTipText("<html>Automatically set each unit's display name from its MDX filename.<br>"
-                + "Use the Format dropdown to choose how the filename is converted.</html>");
-        autoAssignIconBox.setToolTipText("<html>If a BTN* texture matching the MDX filename is found<br>"
-                + "among the selected assets, automatically assign it as the unit's command-card icon.</html>");
-        nameFormatCombo.setToolTipText("<html>How the MDX filename is converted into a display name.<br>"
-                + "Example — <i>InfantryAmerican</i>:<br>"
-                + "&nbsp;&nbsp;Space Separated (keep case): <b>Infantry American</b><br>"
-                + "&nbsp;&nbsp;Space Separated: <b>Infantry american</b><br>"
-                + "&nbsp;&nbsp;camelCase: <b>infantryAmerican</b><br>"
-                + "&nbsp;&nbsp;snake_case: <b>infantry_american</b><br>"
-                + "&nbsp;&nbsp;UPPER_CASE: <b>INFANTRY_AMERICAN</b></html>");
+        // ---- Tooltips (sourced from i18n bundle) ----
+        createUnitsBox.setToolTipText(Messages.get("tooltip.createUnits"));
+        placeUnitsBox.setToolTipText(Messages.get("tooltip.placeUnits"));
+        clearUnitsBox.setToolTipText(Messages.get("tooltip.clearUnits"));
+        clearAssetsBox.setToolTipText(Messages.get("tooltip.clearAssets"));
+        flattenPathsBox.setToolTipText(Messages.get("tooltip.flattenPaths"));
+        unitScalingSpinner.setToolTipText(Messages.get("tooltip.unitScaling"));
+        unitOriginField.setToolTipText(Messages.get("tooltip.unitOriginId"));
+        unitAngleSpinner.setToolTipText(Messages.get("tooltip.unitAngle"));
+        unitSpacingXSpinner.setToolTipText(Messages.get("tooltip.spacingX"));
+        unitSpacingYSpinner.setToolTipText(Messages.get("tooltip.spacingY"));
+        placingOrderCombo.setToolTipText(Messages.get("tooltip.placingOrder"));
+        autoNameUnitsBox.setToolTipText(Messages.get("tooltip.autoNameUnits"));
+        autoAssignIconBox.setToolTipText(Messages.get("tooltip.autoAssignIcon"));
+        nameFormatCombo.setToolTipText(Messages.get("tooltip.nameFormat"));
 
         // ---- Output path field ----
         outputPathField = new JTextField();
@@ -170,6 +167,9 @@ public class ImportConfigPanel extends JPanel {
         unitSpacingYSpinner.addChangeListener(e -> syncConfig());
         placingOrderCombo.addActionListener(e -> syncConfig());
         syncConfig();
+
+        // Populate all i18n labels for the initial locale
+        applyI18n();
     }
 
     // -------------------------------------------------------------------------
@@ -232,7 +232,8 @@ public class ImportConfigPanel extends JPanel {
     }
 
     private JPanel buildCreationSection() {
-        JPanel p = new JPanel(new GridBagLayout());
+        creationSection = new JPanel(new GridBagLayout());
+        JPanel p = creationSection;
         p.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitCreation")));
 
         GridBagConstraints lc = new GridBagConstraints();
@@ -273,13 +274,14 @@ public class ImportConfigPanel extends JPanel {
         cc.gridy = row++;
         p.add(flattenPathsBox, cc);
 
-        addRow(p, lc, fc, row++, Messages.get("label.unitScaling"), unitScalingSpinner);
+        addRow(p, lc, fc, row++, unitScalingLabel, unitScalingSpinner);
 
         return p;
     }
 
     private JPanel buildPlacementSection() {
-        JPanel p = new JPanel(new GridBagLayout());
+        placementSection = new JPanel(new GridBagLayout());
+        JPanel p = placementSection;
         p.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitPlacement")));
 
         GridBagConstraints lc = new GridBagConstraints();
@@ -294,17 +296,18 @@ public class ImportConfigPanel extends JPanel {
         fc.insets = new Insets(5, 2, 3, 10);
 
         int row = 0;
-        addRow(p, lc, fc, row++, Messages.get("label.unitOriginId"), unitOriginField);
-        addRow(p, lc, fc, row++, Messages.get("label.unitAngle"), unitAngleSpinner);
-        addRow(p, lc, fc, row++, Messages.get("label.spacingX"), unitSpacingXSpinner);
-        addRow(p, lc, fc, row++, Messages.get("label.spacingY"), unitSpacingYSpinner);
-        addRow(p, lc, fc, row++, Messages.get("label.placingOrder"), placingOrderCombo);
+        addRow(p, lc, fc, row++, unitOriginIdLabel, unitOriginField);
+        addRow(p, lc, fc, row++, unitAngleLabel, unitAngleSpinner);
+        addRow(p, lc, fc, row++, spacingXLabel, unitSpacingXSpinner);
+        addRow(p, lc, fc, row++, spacingYLabel, unitSpacingYSpinner);
+        addRow(p, lc, fc, row++, placingOrderLabel, placingOrderCombo);
 
         return p;
     }
 
     private JPanel buildNamingSection() {
-        JPanel p = new JPanel(new GridBagLayout());
+        namingSection = new JPanel(new GridBagLayout());
+        JPanel p = namingSection;
         p.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitNaming")));
 
         GridBagConstraints cc = new GridBagConstraints();
@@ -329,9 +332,9 @@ public class ImportConfigPanel extends JPanel {
         fc.weightx = 1.0;
         fc.insets = new Insets(3, 2, 3, 10);
 
-        addRow(p, lc, fc, 2, Messages.get("label.nameFormat"), nameFormatCombo);
+        addRow(p, lc, fc, 2, nameFormatLabel, nameFormatCombo);
 
-        JButton previewBtn = new JButton(Messages.get("button.preview"));
+        previewBtn = new JButton(Messages.get("button.preview"));
         GridBagConstraints bc = new GridBagConstraints();
         bc.gridx = 0;
         bc.gridy = 3;
@@ -347,14 +350,14 @@ public class ImportConfigPanel extends JPanel {
     private void showNamingPreview() {
         if (selectedMdxFilenames.isEmpty()) {
             JOptionPane.showMessageDialog(this,
-                    "No MDX files selected. Please select MDX files in the Assets tab first.",
-                    "Unit Naming Preview",
+                    Messages.get("preview.noMdxSelected"),
+                    Messages.get("preview.namingTitle"),
                     JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
         String format = getNameFormat();
-        String[] columnNames = {"Original Name", "Formatted Name"};
+        String[] columnNames = {Messages.get("preview.colOriginal"), Messages.get("preview.colFormatted")};
         Object[][] data = new Object[selectedMdxFilenames.size()][2];
 
         for (int i = 0; i < selectedMdxFilenames.size(); i++) {
@@ -377,7 +380,7 @@ public class ImportConfigPanel extends JPanel {
 
         JOptionPane.showMessageDialog(this,
                 scrollPane,
-                "Unit Naming Preview - " + format,
+                Messages.get("preview.namingTitle") + " — " + format,
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -385,25 +388,26 @@ public class ImportConfigPanel extends JPanel {
         JPanel p = new JPanel(new BorderLayout());
 
         // ---- Output path row (full width above the map image) ----
-        JButton browseBtn = new JButton(Messages.get("button.browse"));
+        browseBtn = new JButton(Messages.get("button.browse"));
         browseBtn.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             String current = outputPathField.getText().trim();
             if (!current.isEmpty()) chooser.setSelectedFile(new java.io.File(current));
-            chooser.setDialogTitle("Save output map as…");
+            chooser.setDialogTitle(Messages.get("dialog.saveOutput"));
             if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
                 outputPathField.setText(chooser.getSelectedFile().getAbsolutePath());
             }
         });
 
+        outputLabel = new JLabel(Messages.get("label.output") + " ");
         JPanel outputRow = new JPanel(new BorderLayout(5, 0));
         outputRow.setBorder(BorderFactory.createEmptyBorder(4, 4, 2, 4));
-        outputRow.add(new JLabel(Messages.get("label.output") + " "), BorderLayout.WEST);
+        outputRow.add(outputLabel, BorderLayout.WEST);
         outputRow.add(outputPathField, BorderLayout.CENTER);
         outputRow.add(browseBtn, BorderLayout.EAST);
 
         // ---- Toolbar (Clear button) ----
-        JButton clearBtn = new JButton(Messages.get("button.clear"));
+        clearBtn = new JButton(Messages.get("button.clear"));
         clearBtn.addActionListener(e -> mapPreviewPanel.clearShape());
 
         JToolBar toolbar = new JToolBar();
@@ -467,13 +471,8 @@ public class ImportConfigPanel extends JPanel {
 
     private void showCapacityHelp() {
         JOptionPane.showMessageDialog(this,
-                "The capacity indicates how many units can fit inside the drawn shape\n"
-                        + "with the current spacing settings.\n\n"
-                        + "  \u2022 Green: All selected units fit in the shape.\n"
-                        + "  \u2022 Red: The shape is too small. Increase the shape size\n"
-                        + "    or increase the spacing values.\n\n"
-                        + "Only units that fit will be placed on the map.",
-                "Unit Placement Capacity",
+                Messages.get("help.capacityText"),
+                Messages.get("help.capacityTitle"),
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -587,7 +586,8 @@ public class ImportConfigPanel extends JPanel {
     }
 
     public String getNameFormat() {
-        return (String) nameFormatCombo.getSelectedItem();
+        NameFormatItem item = (NameFormatItem) nameFormatCombo.getSelectedItem();
+        return item != null ? item.formatKey() : "Space Separated (keep case)";
     }
 
     public boolean isAutoAssignIconEnabled() {
@@ -655,8 +655,65 @@ public class ImportConfigPanel extends JPanel {
     }
 
     // -------------------------------------------------------------------------
+    // i18n refresh
+    // -------------------------------------------------------------------------
+
+    /** Refreshes all translatable labels after a locale change. */
+    public void applyI18n() {
+        // Checkboxes
+        createUnitsBox.setText(Messages.get("checkbox.createUnits"));
+        placeUnitsBox.setText(Messages.get("checkbox.placeUnits"));
+        clearUnitsBox.setText(Messages.get("checkbox.clearUnits"));
+        clearAssetsBox.setText(Messages.get("checkbox.clearAssets"));
+        flattenPathsBox.setText(Messages.get("checkbox.flattenPaths"));
+        autoNameUnitsBox.setText(Messages.get("checkbox.autoNameUnits"));
+        autoAssignIconBox.setText(Messages.get("checkbox.autoAssignIcon"));
+        // Section titled borders — setBorder() triggers revalidate+repaint on each panel
+        creationSection.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitCreation")));
+        placementSection.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitPlacement")));
+        namingSection.setBorder(BorderFactory.createTitledBorder(Messages.get("section.unitNaming")));
+        // Combo boxes re-render their items via toString()
+        nameFormatCombo.repaint();
+        placingOrderCombo.repaint();
+        // Row labels
+        unitScalingLabel.setText(Messages.get("label.unitScaling"));
+        unitOriginIdLabel.setText(Messages.get("label.unitOriginId"));
+        unitAngleLabel.setText(Messages.get("label.unitAngle"));
+        spacingXLabel.setText(Messages.get("label.spacingX"));
+        spacingYLabel.setText(Messages.get("label.spacingY"));
+        placingOrderLabel.setText(Messages.get("label.placingOrder"));
+        nameFormatLabel.setText(Messages.get("label.nameFormat"));
+        outputLabel.setText(Messages.get("label.output") + " ");
+        // Sub-panel buttons
+        previewBtn.setText(Messages.get("button.preview"));
+        clearBtn.setText(Messages.get("button.clear"));
+        browseBtn.setText(Messages.get("button.browse"));
+        // Tooltips
+        createUnitsBox.setToolTipText(Messages.get("tooltip.createUnits"));
+        placeUnitsBox.setToolTipText(Messages.get("tooltip.placeUnits"));
+        clearUnitsBox.setToolTipText(Messages.get("tooltip.clearUnits"));
+        clearAssetsBox.setToolTipText(Messages.get("tooltip.clearAssets"));
+        flattenPathsBox.setToolTipText(Messages.get("tooltip.flattenPaths"));
+        unitScalingSpinner.setToolTipText(Messages.get("tooltip.unitScaling"));
+        unitOriginField.setToolTipText(Messages.get("tooltip.unitOriginId"));
+        unitAngleSpinner.setToolTipText(Messages.get("tooltip.unitAngle"));
+        unitSpacingXSpinner.setToolTipText(Messages.get("tooltip.spacingX"));
+        unitSpacingYSpinner.setToolTipText(Messages.get("tooltip.spacingY"));
+        placingOrderCombo.setToolTipText(Messages.get("tooltip.placingOrder"));
+        autoNameUnitsBox.setToolTipText(Messages.get("tooltip.autoNameUnits"));
+        autoAssignIconBox.setToolTipText(Messages.get("tooltip.autoAssignIcon"));
+        nameFormatCombo.setToolTipText(Messages.get("tooltip.nameFormat"));
+        outputPathField.setToolTipText(Messages.get("tooltip.outputPath"));
+    }
+
+    // -------------------------------------------------------------------------
     // Inner types
     // -------------------------------------------------------------------------
+
+    /** Pairs an internal format key with its i18n message key. */
+    private record NameFormatItem(String formatKey, String i18nKey) {
+        @Override public String toString() { return Messages.get(i18nKey); }
+    }
 
     /**
      * Small icon that paints a filled circle with the given color.

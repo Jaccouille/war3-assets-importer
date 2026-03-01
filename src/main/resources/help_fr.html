@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html><body style='font-family: sans-serif; margin: 14px; font-size: 13px;'>
+
+<h2 style='margin-top:0'>Importateur de mod&egrave;les Warcraft&nbsp;3</h2>
+<p>Importe des assets personnalis&eacute;s (mod&egrave;les 3D, textures, sons et tout autre fichier) dans un
+fichier de carte Warcraft&nbsp;III (.w3x&nbsp;/&nbsp;.w3m), et cr&eacute;e optionnellement des d&eacute;finitions
+d&rsquo;unit&eacute;s pour que les mod&egrave;les soient utilisables dans le World Editor et en jeu.</p>
+
+<h3>D&eacute;marrage rapide</h3>
+<ol>
+  <li>Cliquez sur <b>Ouvrir la carte</b> pour charger une carte <code>.w3x</code> ou <code>.w3m</code>.</li>
+  <li>Cliquez sur <b>Importer le dossier de mod&egrave;les</b> pour analyser un dossier contenant les assets &agrave; importer.</li>
+  <li>S&eacute;lectionnez les fichiers &agrave; importer &agrave; l&rsquo;aide des cases &agrave; cocher dans l&rsquo;onglet <b>Ressources</b>.</li>
+  <li>Configurez les options dans l&rsquo;onglet <b>Configuration d&rsquo;import</b>.</li>
+  <li>Cliquez sur <b>Traiter et enregistrer</b> &mdash; la carte trait&eacute;e est &eacute;crite dans le chemin de sortie.</li>
+</ol>
+
+<h3>Onglet Ressources</h3>
+<p>Affiche les assets d&eacute;couverts selon deux vues s&eacute;lectionnables&nbsp;:</p>
+<ul>
+  <li><b>Vue par cat&eacute;gorie</b> &mdash; fichiers regroup&eacute;s par type (Mod&egrave;les&nbsp;/&nbsp;Textures),
+      organis&eacute;s dans la m&ecirc;me hi&eacute;rarchie de dossiers que sur le disque.</li>
+  <li><b>Vue par dossier</b> &mdash; l&rsquo;arborescence brute du syst&egrave;me de fichiers &agrave; partir
+      du dossier s&eacute;lectionn&eacute;. Affiche le nombre de fichiers/dossiers et la taille totale entre
+      parenth&egrave;ses.</li>
+</ul>
+<p>Utilisez les cases &agrave; cocher pour s&eacute;lectionner les fichiers &agrave; importer.
+Cocher un n&oelig;ud de dossier s&eacute;lectionne tout son contenu.
+Cliquer sur un n&oelig;ud de fichier affiche un aper&ccedil;u de l&rsquo;asset &agrave; droite.</p>
+
+<h3>Onglet Configuration d&rsquo;import</h3>
+
+<h4>Cr&eacute;ation d&rsquo;unit&eacute;s</h4>
+<table cellpadding='4' width='100%'>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Cr&eacute;er des unit&eacute;s</td>
+    <td>Ajoute une d&eacute;finition d&rsquo;unit&eacute; personnalis&eacute;e pour chaque mod&egrave;le MDX s&eacute;lectionn&eacute;.
+        Chaque unit&eacute; appara&icirc;t comme une nouvelle entr&eacute;e dans l&rsquo;&Eacute;diteur d&rsquo;objets (fichier W3U).</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Placer les unit&eacute;s</td>
+    <td>Place les unit&eacute;s cr&eacute;&eacute;es sur le terrain de la carte.
+        Dessinez un rectangle sur l&rsquo;aper&ccedil;u de la carte pour d&eacute;finir la zone de placement,
+        ou laissez-le vide pour utiliser toute la zone d&eacute;limit&eacute;e par la cam&eacute;ra.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Supprimer toutes les unit&eacute;s</td>
+    <td>Supprime tous les placements d&rsquo;unit&eacute;s existants de la carte avant l&rsquo;import.
+        Utile pour recommencer depuis z&eacute;ro sans accumuler les doublons.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Supprimer les assets existants</td>
+    <td>Supprime tous les assets pr&eacute;c&eacute;demment import&eacute;s de l&rsquo;archive de la carte avant d&rsquo;ajouter
+        la nouvelle s&eacute;lection. Utile pour remplacer un import sans laisser de fichiers
+        obsol&egrave;tes.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Garder le nom de fichier</td>
+    <td>Stocke les assets import&eacute;s sans leur chemin de sous-dossier
+        (ex.&nbsp;<code>Infantry/soldier.mdx</code> &rarr; <code>soldier.mdx</code>).
+        Les textures de bouton (BTN*/DISBTN*) utilisent toujours leur chemin WC3 canonique
+        quelle que soit cette option.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>&Eacute;chelle de l&rsquo;unit&eacute;</td>
+    <td>Facteur d&rsquo;&eacute;chelle appliqu&eacute; &agrave; la taille du mod&egrave;le des unit&eacute;s cr&eacute;&eacute;es.
+        1.0&nbsp;= taille originale, 2.0&nbsp;= double taille.</td>
+  </tr>
+</table>
+
+<h4>Placement des unit&eacute;s</h4>
+<table cellpadding='4' width='100%'>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>ID d&rsquo;unit&eacute; d&rsquo;origine</td>
+    <td>ID du type d&rsquo;unit&eacute; de base utilis&eacute; comme mod&egrave;le pour les unit&eacute;s cr&eacute;&eacute;es
+        (ex.&nbsp;<code>hfoo</code> pour le Fantassin humain).
+        Les nouvelles unit&eacute;s h&eacute;ritent de leurs statistiques de base de ce type.
+        Saisissez du texte pour rechercher les d&eacute;finitions d&rsquo;unit&eacute;s existantes dans la carte
+        charg&eacute;e.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Angle de l&rsquo;unit&eacute;</td>
+    <td>Direction de face des unit&eacute;s plac&eacute;es en degr&eacute;s.
+        0&deg;&nbsp;= Est &nbsp; 90&deg;&nbsp;= Nord &nbsp; 180&deg;&nbsp;= Ouest &nbsp; 270&deg;&nbsp;= Sud
+        (direction cam&eacute;ra WC3 par d&eacute;faut).</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Espacement X&nbsp;/&nbsp;Y</td>
+    <td>&Eacute;cart horizontal et vertical entre les unit&eacute;s sur la grille de placement,
+        mesur&eacute; en pixels par rapport &agrave; l&rsquo;image de carte affich&eacute;e.
+        Des valeurs plus petites regroupent les unit&eacute;s plus &eacute;troitement.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Ordre de placement</td>
+    <td>Indique si la grille de placement se remplit de gauche &agrave; droite ligne par ligne,
+        ou de haut en bas colonne par colonne.</td>
+  </tr>
+</table>
+
+<h4>Nommage des unit&eacute;s</h4>
+<table cellpadding='4' width='100%'>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Nommer depuis le fichier MDX</td>
+    <td>D&eacute;finit automatiquement le nom d&rsquo;affichage de chaque unit&eacute; en convertissant son nom de
+        fichier MDX. Choisissez un style avec la liste d&eacute;roulante Format.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Assigner l&rsquo;ic&ocirc;ne BTN</td>
+    <td>Si une texture BTN* correspondant au nom du fichier MDX est trouv&eacute;e parmi les assets
+        s&eacute;lectionn&eacute;s, elle est automatiquement assign&eacute;e comme ic&ocirc;ne de la carte de commandes
+        de l&rsquo;unit&eacute;.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Format</td>
+    <td>Comment le nom de fichier est converti en nom d&rsquo;affichage&nbsp;:<br>
+        &nbsp;&nbsp;<b>S&eacute;par&eacute; par espaces (casse conserv&eacute;e)</b>&nbsp;: <code>InfantryAmerican</code> &rarr; <i>Infantry American</i><br>
+        &nbsp;&nbsp;<b>S&eacute;par&eacute; par espaces</b>&nbsp;: &rarr; <i>Infantry american</i><br>
+        &nbsp;&nbsp;<b>camelCase</b>&nbsp;: &rarr; <i>infantryAmerican</i><br>
+        &nbsp;&nbsp;<b>snake_case</b>&nbsp;: &rarr; <i>infantry_american</i><br>
+        &nbsp;&nbsp;<b>UPPER_CASE</b>&nbsp;: &rarr; <i>INFANTRY_AMERICAN</i></td>
+  </tr>
+  <tr valign='top'>
+    <td width='175' style='font-weight:bold;white-space:nowrap'>Aper&ccedil;u</td>
+    <td>Ouvre un tableau montrant comment chaque nom de fichier MDX s&eacute;lectionn&eacute; sera format&eacute;
+        avec les param&egrave;tres actuels.</td>
+  </tr>
+</table>
+
+<h4>Aper&ccedil;u de la carte</h4>
+<p>Le panneau de droite affiche l&rsquo;image de la carte et permet de d&eacute;finir la zone de placement
+des unit&eacute;s.</p>
+<ul>
+  <li>Cliquez et faites glisser pour dessiner un rectangle sur l&rsquo;image de la carte.</li>
+  <li>Les triangles bleus indiquent o&ugrave; les unit&eacute;s seront plac&eacute;es avec l&rsquo;espacement actuel.</li>
+  <li>Les triangles jaunes repr&eacute;sentent les unit&eacute;s d&eacute;j&agrave; pr&eacute;sentes dans la carte.</li>
+  <li>Cliquez sur <b>Effacer</b> pour supprimer la forme dessin&eacute;e&nbsp;; les unit&eacute;s utiliseront
+      alors toute la zone de la carte.</li>
+  <li>L&rsquo;indicateur d&rsquo;&eacute;tat est <span style='color:green'><b>vert</b></span> lorsque toutes les
+      unit&eacute;s tiennent dans la zone, <span style='color:red'><b>rouge</b></span> lorsque la zone est
+      trop petite (agrandissez la forme ou augmentez les valeurs d&rsquo;espacement).</li>
+</ul>
+
+</body></html>

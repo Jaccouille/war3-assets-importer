@@ -48,22 +48,20 @@ public class PreviewPanel extends JPanel {
 
     /** Available thumbnail sizes, similar to Windows Explorer view options. */
     public enum IconSize {
-        EXTRA_LARGE("Extra Large Icons", 256),
-        LARGE("Large Icons",             128),
-        MEDIUM("Medium Icons",            96),
-        SMALL("Small Icons",              48);
+        EXTRA_LARGE(256),
+        LARGE(128),
+        MEDIUM(96),
+        SMALL(48);
 
-        private final String label;
         private final int pixels;
 
-        IconSize(String label, int pixels) {
-            this.label = label;
+        IconSize(int pixels) {
             this.pixels = pixels;
         }
 
         public int getPixels() { return pixels; }
 
-        @Override public String toString() { return label; }
+        @Override public String toString() { return Messages.get("preview.iconSize." + name()); }
     }
 
     // ---- Current thumbnail size (user-selectable) ----
@@ -95,6 +93,7 @@ public class PreviewPanel extends JPanel {
 
     // ---- Size selector ----
     private final JComboBox<IconSize> sizeCombo;
+    private final JLabel viewLabel = new JLabel();
 
     public PreviewPanel() {
         setLayout(new BorderLayout());
@@ -107,7 +106,7 @@ public class PreviewPanel extends JPanel {
 
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
-        toolbar.add(new JLabel(" View: "));
+        toolbar.add(viewLabel);
         toolbar.add(sizeCombo);
 
         add(toolbar, BorderLayout.NORTH);
@@ -311,9 +310,10 @@ public class PreviewPanel extends JPanel {
     // i18n
     // -------------------------------------------------------------------------
 
-    /** Refreshes the titled border text after a locale change. */
+    /** Refreshes translatable labels after a locale change. */
     public void applyI18n() {
         setBorder(BorderFactory.createTitledBorder(Messages.get("label.preview")));
+        viewLabel.setText(" " + Messages.get("preview.viewLabel") + " ");
     }
 
     // -------------------------------------------------------------------------

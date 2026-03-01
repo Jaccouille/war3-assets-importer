@@ -1,6 +1,7 @@
 package org.example.gui;
 
 import org.example.core.model.ExistingUnit;
+import org.example.gui.i18n.Messages;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,13 +42,10 @@ public class MapPreviewPanel extends JPanel {
     }
 
     public enum PlacingOrder {
-        ROWS("Rows"), COLUMNS("Columns");
-
-        private final String label;
-        PlacingOrder(String label) { this.label = label; }
+        ROWS, COLUMNS;
 
         @Override
-        public String toString() { return label; }
+        public String toString() { return Messages.get("placingOrder." + name().toLowerCase()); }
     }
 
     /**
@@ -215,7 +213,7 @@ public class MapPreviewPanel extends JPanel {
         g.setColor(new Color(55, 55, 55));
         g.fillRect(0, 0, getWidth(), getHeight());
         g.setColor(Color.GRAY);
-        String msg = "Open a map to display the preview here";
+        String msg = Messages.get("map.noMapLoaded");
         FontMetrics fm = g.getFontMetrics();
         g.drawString(msg, (getWidth() - fm.stringWidth(msg)) / 2, getHeight() / 2);
     }

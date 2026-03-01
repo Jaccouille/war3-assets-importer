@@ -10,7 +10,6 @@ import org.example.core.service.ImportService;
 import org.example.core.service.MapMetadataService;
 import org.example.gui.i18n.Messages;
 import org.example.gui.settings.AppearanceConfig;
-import org.example.gui.settings.KeybindingsConfig;
 import org.example.gui.settings.SettingsDialog;
 
 import javax.imageio.ImageIO;
@@ -53,9 +52,6 @@ public class MainFrame {
     private final AssetDiscoveryService discoveryService = new AssetDiscoveryService();
     private final ImportService importService = new ImportService();
 
-    // ---- Keybindings ----
-    private final KeybindingsConfig keybindingsConfig = new KeybindingsConfig();
-
     // ---- Appearance ----
     private final AppearanceConfig appearanceConfig;
 
@@ -84,12 +80,16 @@ public class MainFrame {
     private JButton settingsButton;
     private JButton helpButton;
 
+    // Panels with updatable titles
+    private JTabbedPane tabbedPane;
+    private JPanel mapDescPanel;
+    private JPanel logPanel;
+
     // Status bar
     private JProgressBar statusBar;
 
     public MainFrame(AppearanceConfig appearanceConfig) {
         this.appearanceConfig = appearanceConfig;
-        keybindingsConfig.load();
         checkBlpSupport();
         initialize();
     }
@@ -147,7 +147,7 @@ public class MainFrame {
         // ---- Status bar ----
         statusBar = new JProgressBar(0, 100);
         statusBar.setStringPainted(true);
-        statusBar.setString("Ready");
+        statusBar.setString(Messages.get("status.ready"));
 
         // ---- Panels ----
         logArea = new JTextArea();
@@ -170,18 +170,18 @@ public class MainFrame {
         assetPreviewPane.setOneTouchExpandable(true);
 
         // Log panel with titled border
-        JPanel logPanel = new JPanel(new BorderLayout());
+        logPanel = new JPanel(new BorderLayout());
         logPanel.setBorder(BorderFactory.createTitledBorder(Messages.get("tab.logs")));
         logPanel.add(new JScrollPane(logArea), BorderLayout.CENTER);
 
         // Tabbed pane — Map Description is always visible above, so only 3 tabs here
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
         tabbedPane.addTab(Messages.get("tab.assets"), assetPreviewPane);
         tabbedPane.addTab(Messages.get("tab.importConfig"), importConfigPanel);
         tabbedPane.addTab(Messages.get("tab.logs"), logPanel);
 
         // Wrap Map Description with a titled border
-        JPanel mapDescPanel = new JPanel(new BorderLayout());
+        mapDescPanel = new JPanel(new BorderLayout());
         mapDescPanel.setBorder(BorderFactory.createTitledBorder(Messages.get("panel.mapDescription")));
         mapDescPanel.add(mapDescriptionPanel, BorderLayout.CENTER);
         mapDescPanel.setMinimumSize(new Dimension(0, 200)); // allow the divider to be dragged up
@@ -200,10 +200,6 @@ public class MainFrame {
 
         frame.getContentPane().add(panel);
 
-        // ---- Actions and keybindings ----
-        registerActions();
-        applyKeybindings();
-
         // ---- Button wiring ----
         openMapButton.addActionListener(this::onOpenMap);
         importModelsButton.addActionListener(this::onImportModels);
@@ -217,49 +213,6 @@ public class MainFrame {
     // -------------------------------------------------------------------------
     // Button handlers
     // -------------------------------------------------------------------------
-
-    private void registerActions() {
-        ActionMap am = frame.getRootPane().getActionMap();
-        am.put(KeybindingsConfig.ACTION_OPEN_MAP,
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent e) {
-                        onOpenMap(e);
-                    }
-                });
-        am.put(KeybindingsConfig.ACTION_IMPORT_MODELS,
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent e) {
-                        onImportModels(e);
-                    }
-                });
-        am.put(KeybindingsConfig.ACTION_PROCESS,
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent e) {
-                        onProcess(e);
-                    }
-                });
-        am.put(KeybindingsConfig.ACTION_SETTINGS,
-                new AbstractAction() {
-                    public void actionPerformed(ActionEvent e) {
-                        onOpenSettings(e);
-                    }
-                });
-    }
-
-    /**
-     * (Re-)applies keybindings from config to the root pane InputMap.
-     */
-    public void applyKeybindings() {
-        InputMap im = frame.getRootPane()
-                .getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        im.clear();
-        for (String action : KeybindingsConfig.DEFAULTS.keySet()) {
-            KeyStroke ks = keybindingsConfig.getKeyStroke(action);
-            if (ks != null) {
-                im.put(ks, action);
-            }
-        }
-    }
 
     private void onOpenMap(ActionEvent e) {
         JFileChooser chooser = new JFileChooser(lastMapDir);
@@ -373,7 +326,7 @@ public class MainFrame {
                 statusBar.setIndeterminate(false);
                 importModelsButton.setEnabled(true);
                 if (isCancelled()) {
-                    statusBar.setString("Ready");
+                    statusBar.setString(Messages.get("status.ready"));
                     return;
                 }
                 try {
@@ -384,11 +337,11 @@ public class MainFrame {
                     log(MessageFormat.format(Messages.get("log.foundTextures"), discoveredAssets.textureFiles().size()));
                     assetTreePanel.updateTree(discoveredAssets.mdxFiles(), discoveredAssets.textureFiles(),
                             discoveredAssets.fileSizes());
-                    statusBar.setString("Ready");
+                    statusBar.setString(Messages.get("status.ready"));
                 } catch (Exception ex) {
                     LOG.log(Level.WARNING, "Asset discovery failed", ex);
                     log(MessageFormat.format(Messages.get("log.errorReadingFiles"), ex.getMessage()));
-                    statusBar.setString("Error — see Logs tab.");
+                    statusBar.setString(Messages.get("status.error"));
                 }
             }
         };
@@ -451,7 +404,7 @@ public class MainFrame {
 
         // Update status bar and disable the process button while running
         statusBar.setValue(0);
-        statusBar.setString("Importing…");
+        statusBar.setString(Messages.get("status.importing"));
         processButton.setEnabled(false);
 
         LOG.fine("Launching import task: " + selectedFiles.size() + " file(s) → " + outputFile.getName());
@@ -467,17 +420,17 @@ public class MainFrame {
                 int pct = (Integer) evt.getNewValue();
                 statusBar.setValue(pct);
                 if (pct >= 100) {
-                    statusBar.setString("Done.");
+                    statusBar.setString(Messages.get("status.done"));
                     processButton.setEnabled(true);
                 } else {
-                    statusBar.setString("Importing… (" + pct + "%)");
+                    statusBar.setString(MessageFormat.format(Messages.get("status.importingPct"), pct));
                 }
             } else if (SwingWorker.StateValue.DONE == evt.getNewValue()) {
                 // Covers failure path where done() shows the popup
                 processButton.setEnabled(true);
                 if (statusBar.getValue() < 100) {
                     statusBar.setValue(0);
-                    statusBar.setString("Error — see Logs tab.");
+                    statusBar.setString(Messages.get("status.error"));
                 }
             }
         });
@@ -487,7 +440,7 @@ public class MainFrame {
 
     private void onOpenSettings(ActionEvent e) {
         LOG.fine("Opening settings dialog");
-        SettingsDialog dialog = new SettingsDialog(frame, keybindingsConfig, appearanceConfig);
+        SettingsDialog dialog = new SettingsDialog(frame, appearanceConfig);
         dialog.setLocaleChangeListener(locale -> applyI18n());
         dialog.setLookAndFeelChangeListener(() -> {
             SwingUtilities.updateComponentTreeUI(frame);
@@ -495,8 +448,6 @@ public class MainFrame {
             // updateComponentTreeUI already repaints every component in-place.
         });
         dialog.setVisible(true);
-        // After dialog closes, re-apply keybindings in case they changed
-        applyKeybindings();
     }
 
     private void onAssetSelected(File file) {
@@ -528,9 +479,20 @@ public class MainFrame {
         processButton.setText(Messages.get("button.process"));
         settingsButton.setText(Messages.get("button.settings"));
         helpButton.setText(Messages.get("button.help"));
+        // Tab titles
+        tabbedPane.setTitleAt(0, Messages.get("tab.assets"));
+        tabbedPane.setTitleAt(1, Messages.get("tab.importConfig"));
+        tabbedPane.setTitleAt(2, Messages.get("tab.logs"));
+        // Panel titled borders — setBorder() triggers revalidate+repaint automatically
+        mapDescPanel.setBorder(BorderFactory.createTitledBorder(Messages.get("panel.mapDescription")));
+        logPanel.setBorder(BorderFactory.createTitledBorder(Messages.get("tab.logs")));
+        // Status bar — reset to Ready (safe: no import runs while settings are open)
+        statusBar.setString(Messages.get("status.ready"));
+        // Child panels
         mapDescriptionPanel.applyI18n();
         assetTreePanel.applyI18n();
         previewPanel.applyI18n();
+        importConfigPanel.applyI18n();
         frame.repaint();
     }
 

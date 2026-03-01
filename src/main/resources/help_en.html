@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html><body style='font-family: sans-serif; margin: 14px; font-size: 13px;'>
+
+<h2 style='margin-top:0'>Warcraft 3 Model Importer</h2>
+<p>Imports custom assets (3D models, textures, sounds, and any other files) into a
+Warcraft III map file (.w3x / .w3m), and optionally creates unit definitions so
+the models are usable inside the World Editor and in-game.</p>
+
+<h3>Quick Start</h3>
+<ol>
+  <li>Click <b>Open Map</b> to load a <code>.w3x</code> or <code>.w3m</code> map.</li>
+  <li>Click <b>Import Models Folder</b> to scan a folder containing the assets you want to import.</li>
+  <li>Select the files you want to import using the checkboxes in the <b>Assets</b> tab.</li>
+  <li>Configure options in the <b>Import Configuration</b> tab.</li>
+  <li>Click <b>Process and Save</b> &mdash; the processed map is written to the Output path.</li>
+</ol>
+
+<h3>Assets Tab</h3>
+<p>Displays discovered assets in two selectable views:</p>
+<ul>
+  <li><b>Category View</b> &mdash; files grouped by type (Models / Textures),
+      organised into the same folder hierarchy they have on disk.</li>
+  <li><b>Folder View</b> &mdash; the raw filesystem tree rooted at the chosen folder.
+      Shows file/folder count and total size in parentheses.</li>
+</ul>
+<p>Use checkboxes to select which files to import.
+Checking a folder node selects everything inside it.
+Clicking a file node previews the asset on the right.</p>
+
+<h3>Import Configuration Tab</h3>
+
+<h4>Unit Creation</h4>
+<table cellpadding='4' width='100%'>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Create units</td>
+    <td>Add a custom unit definition for each selected MDX model.
+        Each unit appears as a new entry in the Object Editor (W3U file).</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Place units on terrain</td>
+    <td>Place the created units on the map terrain.
+        Draw a rectangle on the map preview to define the placement area,
+        or leave it empty to use the full camera-bounded map area.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Clear all units</td>
+    <td>Remove all existing unit placements from the map before importing.
+        Useful for re-importing without accumulating duplicates.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Clear existing assets</td>
+    <td>Delete all previously imported assets from the map archive before adding
+        the new selection. Use this to replace an old import without leaving stale files.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Keep filename only</td>
+    <td>Store imported assets without their subfolder path
+        (e.g. <code>Infantry/soldier.mdx</code> &rarr; <code>soldier.mdx</code>).
+        Command-button textures (BTN*/DISBTN*) always use their canonical WC3 paths
+        regardless of this setting.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Unit Scaling</td>
+    <td>Scale factor applied to the model size of created units.
+        1.0 = original size, 2.0 = double size.</td>
+  </tr>
+</table>
+
+<h4>Unit Placement</h4>
+<table cellpadding='4' width='100%'>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Unit Origin ID</td>
+    <td>Base unit type ID used as the template for created units
+        (e.g. <code>hfoo</code> for Human Footman).
+        The new units inherit their base stats from this type.
+        Type to search existing unit definitions in the loaded map.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Unit Angle</td>
+    <td>Facing direction of placed units in degrees.
+        0&deg; = East &nbsp; 90&deg; = North &nbsp; 180&deg; = West &nbsp; 270&deg; = South
+        (default WC3 camera direction).</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Spacing X / Y</td>
+    <td>Horizontal and vertical gap between units on the placement grid,
+        measured in pixels relative to the displayed map image.
+        Smaller values pack units more tightly.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Placing Order</td>
+    <td>Whether the placement grid fills left-to-right row by row,
+        or top-to-bottom column by column.</td>
+  </tr>
+</table>
+
+<h4>Unit Naming</h4>
+<table cellpadding='4' width='100%'>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Auto-name from MDX filename</td>
+    <td>Automatically set each unit's display name by converting its MDX filename.
+        Choose a style with the Format dropdown.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Auto-assign BTN icon</td>
+    <td>If a BTN* texture matching the MDX filename is found among selected assets,
+        automatically assign it as the unit's command-card icon.</td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Format</td>
+    <td>How the filename is converted into a display name:<br>
+        &nbsp;&nbsp;<b>Space Separated (keep case)</b>: <code>InfantryAmerican</code> &rarr; <i>Infantry American</i><br>
+        &nbsp;&nbsp;<b>Space Separated</b>: &rarr; <i>Infantry american</i><br>
+        &nbsp;&nbsp;<b>camelCase</b>: &rarr; <i>infantryAmerican</i><br>
+        &nbsp;&nbsp;<b>snake_case</b>: &rarr; <i>infantry_american</i><br>
+        &nbsp;&nbsp;<b>UPPER_CASE</b>: &rarr; <i>INFANTRY_AMERICAN</i></td>
+  </tr>
+  <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Preview</td>
+    <td>Opens a table showing how every selected MDX filename will be formatted
+        with the current settings.</td>
+  </tr>
+</table>
+
+<h4>Map Preview</h4>
+<p>The right-hand panel shows the map image and lets you define the unit placement area.</p>
+<ul>
+  <li>Left-click and drag to draw a rectangle on the map image.</li>
+  <li>The blue triangles show where units will be placed at the current spacing.</li>
+  <li>Yellow triangles show units already present in the map.</li>
+  <li>Click <b>Clear</b> to remove the drawn shape; units will then use the full map area.</li>
+  <li>The status indicator is <span style='color:green'><b>green</b></span> when all units fit,
+      <span style='color:red'><b>red</b></span> when the area is too small
+      (increase the shape size or raise the spacing values).</li>
+</ul>
+
+</body></html>

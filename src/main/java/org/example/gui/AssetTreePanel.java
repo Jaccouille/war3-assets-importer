@@ -64,6 +64,8 @@ public class AssetTreePanel extends JPanel {
 
     // ---- Shared UI ----
     private final JPanel cardPanel;
+    private final JRadioButton categoryBtn;
+    private final JRadioButton folderBtn;
     private boolean isFolderTreeActive = false;
 
     // ---- Shared state ----
@@ -85,12 +87,12 @@ public class AssetTreePanel extends JPanel {
 
         // ---- Folder tree ----
         folderTreeModel = new DefaultTreeModel(
-                new JCheckBoxTreeNode("(no folder loaded)", false));
+                new JCheckBoxTreeNode(Messages.get("tree.noFolderLoaded"), false));
         folderTree = new JCheckBoxTree(folderTreeModel);
 
         // ---- Toggle panel ----
-        JRadioButton categoryBtn = new JRadioButton("Category View", true);
-        JRadioButton folderBtn   = new JRadioButton("Folder View");
+        categoryBtn = new JRadioButton(Messages.get("tree.categoryView"), true);
+        folderBtn   = new JRadioButton(Messages.get("tree.folderView"));
         ButtonGroup viewGroup = new ButtonGroup();
         viewGroup.add(categoryBtn);
         viewGroup.add(folderBtn);
@@ -236,8 +238,10 @@ public class AssetTreePanel extends JPanel {
         return result;
     }
 
-    /** Refreshes i18n labels on the category tree root. */
+    /** Refreshes i18n labels after a locale change. */
     public void applyI18n() {
+        categoryBtn.setText(Messages.get("tree.categoryView"));
+        folderBtn.setText(Messages.get("tree.folderView"));
         TreeNode root = (TreeNode) treeModel.getRoot();
         if (root instanceof JCheckBoxTreeNode cbRoot) {
             Object data = cbRoot.getUserObject();

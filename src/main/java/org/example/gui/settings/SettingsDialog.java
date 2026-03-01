@@ -4,19 +4,17 @@ import org.example.gui.i18n.Messages;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Locale;
 
 /**
- * Modal settings dialog with three tabs:
+ * Modal settings dialog with two tabs:
  * <ol>
  *   <li><b>Language</b> — locale switcher; triggers live UI refresh via callback</li>
- *   <li><b>Keybindings</b> — hotkey table; persisted on dialog close</li>
  *   <li><b>Look & Feel</b> — Swing UI style selector; applied immediately</li>
  * </ol>
  *
  * <p>Usage:
  * <pre>
- *   SettingsDialog dlg = new SettingsDialog(parentFrame, keybindingsConfig, appearanceConfig);
+ *   SettingsDialog dlg = new SettingsDialog(parentFrame, appearanceConfig);
  *   dlg.setLocaleChangeListener(locale -> mainFrame.applyI18n());
  *   dlg.setLookAndFeelChangeListener(() -> SwingUtilities.updateComponentTreeUI(mainFrame));
  *   dlg.setVisible(true);
@@ -24,27 +22,23 @@ import java.util.Locale;
  */
 public class SettingsDialog extends JDialog {
 
-    private final KeybindingsConfig config;
     private final AppearanceConfig appearanceConfig;
     private final LanguagePanel languagePanel;
-    private final KeybindingPanel keybindingPanel;
     private final LookAndFeelPanel lookAndFeelPanel;
+    private final JTabbedPane tabs;
 
-    public SettingsDialog(JFrame parent, KeybindingsConfig config, AppearanceConfig appearanceConfig) {
+    public SettingsDialog(JFrame parent, AppearanceConfig appearanceConfig) {
         super(parent, Messages.get("settings.title"), true /* modal */);
-        this.config = config;
         this.appearanceConfig = appearanceConfig;
 
         languagePanel = new LanguagePanel();
-        keybindingPanel = new KeybindingPanel(config);
         lookAndFeelPanel = new LookAndFeelPanel(appearanceConfig);
 
-        JTabbedPane tabs = new JTabbedPane();
+        tabs = new JTabbedPane();
         tabs.addTab(Messages.get("settings.tab.language"), languagePanel);
-        tabs.addTab(Messages.get("settings.tab.keybindings"), keybindingPanel);
-        tabs.addTab("Look & Feel", lookAndFeelPanel);
+        tabs.addTab(Messages.get("settings.tab.lookAndFeel"), lookAndFeelPanel);
 
-        JButton closeBtn = new JButton("Close");
+        JButton closeBtn = new JButton(Messages.get("button.close"));
         closeBtn.addActionListener(e -> onClose());
 
         JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -54,7 +48,7 @@ public class SettingsDialog extends JDialog {
         add(tabs, BorderLayout.CENTER);
         add(south, BorderLayout.SOUTH);
 
-        setSize(500, 380);
+        setSize(500, 300);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
@@ -91,7 +85,6 @@ public class SettingsDialog extends JDialog {
     // -------------------------------------------------------------------------
 
     private void onClose() {
-        config.save();
         appearanceConfig.save();
         dispose();
     }
@@ -99,15 +92,9 @@ public class SettingsDialog extends JDialog {
     /** Refreshes all labels in the dialog after a locale switch. */
     public void applyI18n() {
         setTitle(Messages.get("settings.title"));
-        // Re-title tabs — find them by index
-        JTabbedPane tabs = (JTabbedPane) ((BorderLayout) getContentPane().getLayout())
-                .getLayoutComponent(BorderLayout.CENTER);
-        if (tabs != null) {
-            tabs.setTitleAt(0, Messages.get("settings.tab.language"));
-            tabs.setTitleAt(1, Messages.get("settings.tab.keybindings"));
-        }
+        tabs.setTitleAt(0, Messages.get("settings.tab.language"));
+        tabs.setTitleAt(1, Messages.get("settings.tab.lookAndFeel"));
         languagePanel.applyI18n();
-        keybindingPanel.applyI18n();
         repaint();
     }
 }

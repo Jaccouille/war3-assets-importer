@@ -1,5 +1,7 @@
 package org.example.gui.settings;
 
+import org.example.gui.i18n.Messages;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -27,7 +29,7 @@ public class LookAndFeelPanel extends JPanel {
         setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        add(new JLabel("Look & Feel:"));
+        add(new JLabel(Messages.get("settings.laf.label")));
 
         // Populate from the platform's installed L&Fs
         UIManager.LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
@@ -51,7 +53,7 @@ public class LookAndFeelPanel extends JPanel {
 
         add(combo);
 
-        JLabel note = new JLabel("Changes take effect immediately.");
+        JLabel note = new JLabel(Messages.get("settings.laf.note"));
         note.setForeground(Color.GRAY);
         note.setFont(note.getFont().deriveFont(Font.ITALIC, 11f));
         add(note);
@@ -84,8 +86,8 @@ public class LookAndFeelPanel extends JPanel {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Could not apply Look & Feel:\n" + ex.getMessage(),
-                    "Error",
+                    Messages.get("settings.laf.error") + "\n" + ex.getMessage(),
+                    Messages.get("status.error"),
                     JOptionPane.ERROR_MESSAGE
             );
         }
