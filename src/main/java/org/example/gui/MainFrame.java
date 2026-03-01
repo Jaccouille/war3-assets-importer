@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
@@ -129,6 +130,7 @@ public class MainFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1280, 900);
         frame.setLocationRelativeTo(null);
+        frame.setIconImage(loadAppIcon());
 
         // ---- Toolbar ----
         openMapButton = new JButton(Messages.get("button.openMap"));
@@ -499,5 +501,30 @@ public class MainFrame {
     private void log(String message) {
         logArea.append(message + "\n");
         logArea.setCaretPosition(logArea.getDocument().getLength());
+    }
+
+    /**
+     * Loads the application icon from {@code /icon.png} on the classpath.
+     * Falls back to a generated placeholder so the app always has an icon.
+     * Replace {@code src/main/resources/icon.png} with the real 64×64 icon.
+     */
+    private static Image loadAppIcon() {
+        try (InputStream is = MainFrame.class.getResourceAsStream("/icon.png")) {
+            if (is != null) return ImageIO.read(is);
+        } catch (Exception ignored) {}
+
+        // Placeholder: simple blue square with a white "W" until the real icon is provided
+        BufferedImage img = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = img.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(new Color(30, 90, 200));
+        g.fillRoundRect(0, 0, 64, 64, 12, 12);
+        g.setColor(Color.WHITE);
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 36));
+        FontMetrics fm = g.getFontMetrics();
+        String label = "W";
+        g.drawString(label, (64 - fm.stringWidth(label)) / 2, (64 - fm.getHeight()) / 2 + fm.getAscent());
+        g.dispose();
+        return img;
     }
 }
