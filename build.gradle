@@ -4,11 +4,11 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group 'org.example'
+group 'com.hiveworkshop'
 version '1.0-SNAPSHOT'
 
 application {
-    mainClass = 'org.example.Main'
+    mainClass = 'com.hiveworkshop.Main'
 }
 
 repositories {
