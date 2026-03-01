@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,10 +82,15 @@ public class PreviewPanel extends JPanel {
     private final JScrollPane scrollPane;
 
     // ---- Async thumb loading ----
-    private SwingWorker<?, ?> thumbLoader;
+    private SwingWorker<Void, ThumbResult> thumbLoader;
 
-    // ---- Cached file list for re-rendering on size change ----
-    private List<File> currentFiles = List.of();
+    // ---- Viewport-bounded thumbnail state ----
+    private List<File>   currentFiles  = List.of();
+    private List<JLabel> currentLabels = List.of();
+    private final BitSet decoded = new BitSet(); // true = label has a real image
+    private javax.swing.event.ChangeListener viewportListener;
+    /** Extra rows to load beyond the visible edge in each direction. */
+    private static final int OVERSCAN_ROWS = 2;
     private boolean inGridMode = false;
 
     // ---- Size selector ----
@@ -179,13 +185,18 @@ public class PreviewPanel extends JPanel {
 
     /**
      * Shows a scrollable thumbnail grid for the supplied image files.
-     * Placeholders appear immediately; actual images load on a background thread.
-     * Any previously running load is cancelled first.
+     * Placeholders appear immediately; images are decoded only for the visible
+     * viewport region (plus {@link #OVERSCAN_ROWS} rows of lookahead). Thumbnails
+     * that scroll far out of view are evicted to release memory.
      */
     public void setImages(List<File> files) {
         cancelThumbLoader();
-        currentFiles = files;
-        inGridMode = true;
+        removeViewportListener();
+        decoded.clear();
+
+        currentFiles  = files;
+        currentLabels = new ArrayList<>(files.size());
+        inGridMode    = true;
         gridPanel.removeAll();
         switchTo(gridPanel);
 
@@ -196,40 +207,79 @@ public class PreviewPanel extends JPanel {
 
         int ts = thumbSize;
         int maxLabelChars = ts >= 128 ? 20 : ts >= 96 ? 14 : 10;
-
-        // Create placeholder labels synchronously so the layout is ready immediately.
-        List<JLabel> labels = new ArrayList<>(files.size());
         ImageIcon placeholder = fallback(ts, 2);
+
         for (File f : files) {
             JLabel lbl = new JLabel(truncate(f.getName(), maxLabelChars), placeholder, SwingConstants.CENTER);
             lbl.setVerticalTextPosition(SwingConstants.BOTTOM);
             lbl.setHorizontalTextPosition(SwingConstants.CENTER);
             lbl.setPreferredSize(new Dimension(ts + 20, ts + 30));
             lbl.setToolTipText(f.getName());
-
-            // Double-click → show BLP metadata popup
             lbl.addMouseListener(new MouseAdapter() {
                 @Override public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() == 2) showImageInfoDialog(f);
                 }
             });
-
             gridPanel.add(lbl);
-            labels.add(lbl);
+            currentLabels.add(lbl);
         }
         gridPanel.revalidate();
         gridPanel.repaint();
 
-        // Load actual images in the background and publish results to the EDT.
-        thumbLoader = new SwingWorker<Void, ThumbResult>() {
+        // Watch viewport changes and trigger load/evict cycles
+        viewportListener = e -> loadVisibleThumbnails();
+        scrollPane.getViewport().addChangeListener(viewportListener);
+        // Defer the first load until the layout pass has run and bounds are valid
+        SwingUtilities.invokeLater(this::loadVisibleThumbnails);
+    }
+
+    // -------------------------------------------------------------------------
+    // Viewport-bounded load / evict
+    // -------------------------------------------------------------------------
+
+    private void loadVisibleThumbnails() {
+        if (currentLabels.isEmpty()) return;
+        Rectangle visible = scrollPane.getViewport().getViewRect();
+        int rowH      = thumbSize + 30;
+        int overscanPx = OVERSCAN_ROWS * rowH;
+
+        int yTop    = Math.max(0, visible.y - overscanPx);
+        int yBottom = visible.y + visible.height + overscanPx;
+        int evictPx = overscanPx * 4;
+
+        List<Integer> toLoad = new ArrayList<>();
+        for (int i = 0; i < currentLabels.size(); i++) {
+            Rectangle b = currentLabels.get(i).getBounds();
+            boolean inRange = (b.height == 0) // not yet laid out — include speculatively
+                    || (b.y + b.height >= yTop && b.y <= yBottom);
+            if (inRange && !decoded.get(i)) {
+                toLoad.add(i);
+            } else if (!inRange && decoded.get(i)) {
+                // Evict thumbnails that are far out of view
+                if (b.y + b.height < visible.y - evictPx || b.y > visible.y + visible.height + evictPx) {
+                    currentLabels.get(i).setIcon(fallback(thumbSize, 2));
+                    decoded.clear(i);
+                }
+            }
+        }
+
+        if (!toLoad.isEmpty()) startThumbLoader(toLoad);
+    }
+
+    private void startThumbLoader(List<Integer> indices) {
+        cancelThumbLoader();
+        List<File>   snapFiles  = List.copyOf(currentFiles);
+        List<JLabel> snapLabels = List.copyOf(currentLabels);
+        int          ts         = thumbSize;
+
+        thumbLoader = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
-                for (int i = 0; i < files.size() && !isCancelled(); i++) {
+                for (int i : indices) {
+                    if (isCancelled() || i >= snapFiles.size()) break;
                     try {
-                        BufferedImage img = ImageIO.read(files.get(i));
-                        if (img != null) {
-                            publish(new ThumbResult(labels.get(i), scaled(img, ts)));
-                        }
+                        BufferedImage img = ImageIO.read(snapFiles.get(i));
+                        if (img != null) publish(new ThumbResult(snapLabels.get(i), scaled(img, ts), i));
                     } catch (Exception ignored) {}
                 }
                 return null;
@@ -238,12 +288,23 @@ public class PreviewPanel extends JPanel {
             @Override
             protected void process(List<ThumbResult> chunks) {
                 for (ThumbResult r : chunks) {
-                    r.label().setIcon(r.icon());
+                    if (r.index() < currentLabels.size()
+                            && r.label() == currentLabels.get(r.index())) {
+                        r.label().setIcon(r.icon());
+                        decoded.set(r.index());
+                    }
                 }
                 gridPanel.repaint();
             }
         };
         thumbLoader.execute();
+    }
+
+    private void removeViewportListener() {
+        if (viewportListener != null) {
+            scrollPane.getViewport().removeChangeListener(viewportListener);
+            viewportListener = null;
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -562,5 +623,5 @@ public class PreviewPanel extends JPanel {
         }
     }
 
-    private record ThumbResult(JLabel label, ImageIcon icon) {}
+    private record ThumbResult(JLabel label, ImageIcon icon, int index) {}
 }

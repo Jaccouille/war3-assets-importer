@@ -5,16 +5,15 @@ import org.example.gui.i18n.Messages;
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -41,8 +40,14 @@ public class AssetTreePanel extends JPanel {
         void onFolderSelected(List<String> textureRelativePaths);
     }
 
+    /** Marker stored as the user-object of a not-yet-expanded sentinel child node. */
+    private static final String SENTINEL = "__LAZY__";
+
     private final JCheckBoxTree assetTree;
     private final DefaultTreeModel treeModel;
+    /** Maps unexpanded folder nodes to their FolderNode data so children can be built on demand. */
+    private final java.util.IdentityHashMap<JCheckBoxTreeNode, FolderNode> pendingNodes
+            = new java.util.IdentityHashMap<>();
     private boolean controlDown = false;
     private boolean isTreeUpdating = false;
     private File modelsFolder;
@@ -63,6 +68,7 @@ public class AssetTreePanel extends JPanel {
         add(treeScrollPane, java.awt.BorderLayout.CENTER);
 
         setupExpandCollapseBehavior();
+        setupLazyExpansion();
         assetTree.addTreeSelectionListener(e -> onTreeSelect());
         // Text-click (no toggle) → still update the preview panel
         assetTree.setRowFocusCallback(this::notifyFocusedRowChange);
@@ -113,9 +119,11 @@ public class AssetTreePanel extends JPanel {
      * Rebuilds the tree from the given file lists.
      * Called after the user picks a models folder.
      */
-    public void updateTree(List<String> mdxFiles, List<String> textureFiles) {
-        JCheckBoxTreeNode mdxNode = buildFolderTree(Messages.get("tree.mdx"), mdxFiles);
-        JCheckBoxTreeNode blpNode = buildFolderTree(Messages.get("tree.textures"), textureFiles);
+    public void updateTree(List<String> mdxFiles, List<String> textureFiles,
+                           Map<String, Long> fileSizes) {
+        pendingNodes.clear();
+        JCheckBoxTreeNode mdxNode = buildFolderTree(Messages.get("tree.mdx"), mdxFiles, fileSizes);
+        JCheckBoxTreeNode blpNode = buildFolderTree(Messages.get("tree.textures"), textureFiles, fileSizes);
 
         TreeNodeData mdxData = (TreeNodeData) mdxNode.getUserObject();
         TreeNodeData blpData = (TreeNodeData) blpNode.getUserObject();
@@ -212,7 +220,8 @@ public class AssetTreePanel extends JPanel {
     // Tree building
     // -------------------------------------------------------------------------
 
-    private JCheckBoxTreeNode buildFolderTree(String label, List<String> filePaths) {
+    private JCheckBoxTreeNode buildFolderTree(String label, List<String> filePaths,
+                                               Map<String, Long> fileSizes) {
         FolderNode folderRoot = new FolderNode(label);
         for (String rel : filePaths) {
             String[] parts = rel.split("/");
@@ -222,10 +231,8 @@ public class AssetTreePanel extends JPanel {
                 cur = cur.getChildOrCreate(parts[i], leaf);
                 if (leaf) {
                     cur.incrementFileCount();
-                    try {
-                        long size = Files.size(Paths.get(modelsFolder.getAbsolutePath(), rel));
-                        cur.addSize(size);
-                    } catch (IOException ignored) {}
+                    Long size = fileSizes.get(rel);
+                    if (size != null) cur.addSize(size);
                 }
             }
         }
@@ -238,14 +245,31 @@ public class AssetTreePanel extends JPanel {
         TreeNodeData data = new TreeNodeData(
                 fn.getName(), fn.isFile(), fullPath, fn.getTotalSize(), fn.getFileCount());
         JCheckBoxTreeNode node = new JCheckBoxTreeNode(data, false);
-        for (FolderNode child : fn.getChildren().values()) {
-            node.add(toCheckBoxNode(child, fullPath));
+        if (!fn.isFile() && !fn.getChildren().isEmpty()) {
+            // Add a sentinel child so the expand arrow appears; real children are built on expand
+            node.add(new JCheckBoxTreeNode(SENTINEL, false));
+            pendingNodes.put(node, fn);
         }
         return node;
     }
 
+    /** Replaces the sentinel child of {@code parent} with its real children from {@code fn}. */
+    private void materializeChildren(JCheckBoxTreeNode parent, FolderNode fn) {
+        parent.removeAllChildren();
+        String parentPath = ((TreeNodeData) parent.getUserObject()).relativePath();
+        for (FolderNode child : fn.getChildren().values()) {
+            parent.add(toCheckBoxNode(child, parentPath));
+        }
+        treeModel.reload(parent);
+    }
+
+    private static boolean isSentinel(JCheckBoxTreeNode node) {
+        return SENTINEL.equals(node.getUserObject());
+    }
+
     private void collectChecked(TreeNode treeNode, Set<Path> result) {
         if (!(treeNode instanceof JCheckBoxTreeNode cbNode)) return;
+        if (isSentinel(cbNode)) return;
         if (cbNode.isLeaf() && cbNode.isChecked()) {
             TreeNodeData data = (TreeNodeData) cbNode.getUserObject();
             if (data.isFile() && modelsFolder != null) {
@@ -291,6 +315,7 @@ public class AssetTreePanel extends JPanel {
      */
     private void collectMdxFilenamesRecursive(TreeNode treeNode, List<String> result) {
         if (!(treeNode instanceof JCheckBoxTreeNode cbNode)) return;
+        if (isSentinel(cbNode)) return;
         if (cbNode.isLeaf() && cbNode.isChecked()) {
             TreeNodeData data = (TreeNodeData) cbNode.getUserObject();
             if (data.isFile()) {
@@ -312,6 +337,20 @@ public class AssetTreePanel extends JPanel {
     // -------------------------------------------------------------------------
     // Ctrl+click expand/collapse all
     // -------------------------------------------------------------------------
+
+    private void setupLazyExpansion() {
+        assetTree.addTreeWillExpandListener(new TreeWillExpandListener() {
+            @Override
+            public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
+                Object last = event.getPath().getLastPathComponent();
+                if (!(last instanceof JCheckBoxTreeNode parent)) return;
+                FolderNode fn = pendingNodes.remove(parent);
+                if (fn != null) materializeChildren(parent, fn);
+            }
+            @Override
+            public void treeWillCollapse(TreeExpansionEvent event) {}
+        });
+    }
 
     private void setupExpandCollapseBehavior() {
         assetTree.addKeyListener(new KeyAdapter() {
@@ -364,7 +403,14 @@ public class AssetTreePanel extends JPanel {
     }
 
     private void expandAllChildren(TreePath path, boolean expand) {
-        TreeNode node = (TreeNode) path.getLastPathComponent();
+        Object last = path.getLastPathComponent();
+        if (last instanceof JCheckBoxTreeNode cbNode) {
+            if (isSentinel(cbNode)) return;
+            // Materialise lazy children before recursing so the full subtree is reachable
+            FolderNode fn = pendingNodes.remove(cbNode);
+            if (fn != null) materializeChildren(cbNode, fn);
+        }
+        TreeNode node = (TreeNode) last;
         for (int i = 0; i < node.getChildCount(); i++) {
             expandAllChildren(path.pathByAddingChild(node.getChildAt(i)), expand);
         }
@@ -386,6 +432,7 @@ public class AssetTreePanel extends JPanel {
             java.util.Arrays.asList(".blp", ".dds", ".tga", ".png", ".jpg", ".jpeg", ".bmp", ".gif"));
 
     private void collectTexturePathsRecursive(JCheckBoxTreeNode node, List<String> result) {
+        if (isSentinel(node)) return;
         if (node.isLeaf()) {
             TreeNodeData data = (TreeNodeData) node.getUserObject();
             if (data.isFile()) {
@@ -399,11 +446,36 @@ public class AssetTreePanel extends JPanel {
             }
             return;
         }
+        // Node not yet expanded — its real children live only in the FolderNode hierarchy.
+        // Traverse that directly so we don't hit the dead-end sentinel child.
+        FolderNode pending = pendingNodes.get(node);
+        if (pending != null) {
+            TreeNodeData data = (TreeNodeData) node.getUserObject();
+            collectTexturePathsFromFolderNode(pending, data.relativePath(), result);
+            return;
+        }
         for (int i = 0; i < node.getChildCount(); i++) {
             Object child = node.getChildAt(i);
             if (child instanceof JCheckBoxTreeNode cb) {
                 collectTexturePathsRecursive(cb, result);
             }
+        }
+    }
+
+    private void collectTexturePathsFromFolderNode(FolderNode fn, String currentPath,
+                                                    List<String> result) {
+        if (fn.isFile()) {
+            String rel = currentPath;
+            int slash = rel.indexOf('/');
+            if (slash >= 0) rel = rel.substring(slash + 1);
+            int dot = rel.lastIndexOf('.');
+            if (dot >= 0 && TEXTURE_EXTENSIONS.contains(rel.substring(dot).toLowerCase())) {
+                result.add(rel);
+            }
+            return;
+        }
+        for (FolderNode child : fn.getChildren().values()) {
+            collectTexturePathsFromFolderNode(child, currentPath + "/" + child.getName(), result);
         }
     }
 
