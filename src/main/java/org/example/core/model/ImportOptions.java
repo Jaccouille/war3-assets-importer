@@ -27,12 +27,14 @@ public final class ImportOptions {
     private final boolean autoNameUnits;
     private final String nameFormat;
     private final boolean autoAssignIcon;
+    /** When true, assets are stored in the MPQ under their filename only (no subfolder path). */
+    private final boolean flattenPaths;
     /** Optional drawn-shape bounds in world space; {@code null} = fall back to camera bounds. */
     private final PlacementBounds placementBounds;
 
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
                          boolean clearAssets, String unitOriginId) {
-        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", false, null);
+        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", false, false, null);
     }
 
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
@@ -40,7 +42,7 @@ public final class ImportOptions {
                          float unitAngle, double unitSpacingX, double unitSpacingY,
                          String unitOriginId,
                          boolean autoNameUnits, String nameFormat,
-                         boolean autoAssignIcon,
+                         boolean autoAssignIcon, boolean flattenPaths,
                          PlacementBounds placementBounds) {
         this.createUnits = createUnits;
         this.placeUnits = placeUnits;
@@ -54,6 +56,7 @@ public final class ImportOptions {
         this.autoNameUnits = autoNameUnits;
         this.nameFormat = nameFormat;
         this.autoAssignIcon = autoAssignIcon;
+        this.flattenPaths = flattenPaths;
         this.placementBounds = placementBounds;
     }
 
@@ -107,6 +110,10 @@ public final class ImportOptions {
 
     public boolean getAutoAssignIcon() {
         return autoAssignIcon;
+    }
+
+    public boolean getFlattenPaths() {
+        return flattenPaths;
     }
 
     /**

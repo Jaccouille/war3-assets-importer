@@ -63,6 +63,7 @@ public class MainFrame {
     private File mapFile;
     private File modelsFolder;
     private AssetDiscoveryResult discoveredAssets;
+    private SwingWorker<AssetDiscoveryResult, Void> discoveryWorker;
 
     // ---- Swing components ----
     private JFrame frame;
@@ -337,22 +338,51 @@ public class MainFrame {
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (chooser.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) return;
 
+        // Cancel any in-flight scan
+        if (discoveryWorker != null && !discoveryWorker.isDone()) discoveryWorker.cancel(true);
+
         modelsFolder = chooser.getSelectedFile();
         LOG.info("Scanning assets folder: " + modelsFolder.getAbsolutePath());
         assetTreePanel.setModelsFolder(modelsFolder);
         log(MessageFormat.format(Messages.get("log.selectedFolder"), modelsFolder.getAbsolutePath()));
 
-        try {
-            discoveredAssets = discoveryService.discover(modelsFolder);
-            LOG.fine("Asset discovery complete: " + discoveredAssets.mdxFiles().size()
-                    + " MDX, " + discoveredAssets.textureFiles().size() + " textures");
-            log(MessageFormat.format(Messages.get("log.foundMdx"), discoveredAssets.mdxFiles().size()));
-            log(MessageFormat.format(Messages.get("log.foundTextures"), discoveredAssets.textureFiles().size()));
-            assetTreePanel.updateTree(discoveredAssets.mdxFiles(), discoveredAssets.textureFiles());
-        } catch (Exception ex) {
-            LOG.log(Level.WARNING, "Asset discovery failed", ex);
-            log(MessageFormat.format(Messages.get("log.errorReadingFiles"), ex.getMessage()));
-        }
+        // Disable button and show indeterminate progress while scanning
+        importModelsButton.setEnabled(false);
+        statusBar.setIndeterminate(true);
+        statusBar.setString(Messages.get("status.scanning"));
+
+        File scanFolder = modelsFolder; // capture for background thread
+        discoveryWorker = new SwingWorker<>() {
+            @Override
+            protected AssetDiscoveryResult doInBackground() throws Exception {
+                return discoveryService.discover(scanFolder, this::isCancelled);
+            }
+
+            @Override
+            protected void done() {
+                statusBar.setIndeterminate(false);
+                importModelsButton.setEnabled(true);
+                if (isCancelled()) {
+                    statusBar.setString("Ready");
+                    return;
+                }
+                try {
+                    discoveredAssets = get();
+                    LOG.fine("Asset discovery complete: " + discoveredAssets.mdxFiles().size()
+                            + " MDX, " + discoveredAssets.textureFiles().size() + " textures");
+                    log(MessageFormat.format(Messages.get("log.foundMdx"), discoveredAssets.mdxFiles().size()));
+                    log(MessageFormat.format(Messages.get("log.foundTextures"), discoveredAssets.textureFiles().size()));
+                    assetTreePanel.updateTree(discoveredAssets.mdxFiles(), discoveredAssets.textureFiles(),
+                            discoveredAssets.fileSizes());
+                    statusBar.setString("Ready");
+                } catch (Exception ex) {
+                    LOG.log(Level.WARNING, "Asset discovery failed", ex);
+                    log(MessageFormat.format(Messages.get("log.errorReadingFiles"), ex.getMessage()));
+                    statusBar.setString("Error — see Logs tab.");
+                }
+            }
+        };
+        discoveryWorker.execute();
     }
 
     // -------------------------------------------------------------------------
@@ -390,6 +420,7 @@ public class MainFrame {
                 importConfigPanel.isAutoNameUnitsEnabled(),
                 importConfigPanel.getNameFormat(),
                 importConfigPanel.isAutoAssignIconEnabled(),
+                importConfigPanel.isFlattenPathsEnabled(),
                 importConfigPanel.getPlacementBounds()  // null when no shape drawn → camera-bounds fallback
         );
 

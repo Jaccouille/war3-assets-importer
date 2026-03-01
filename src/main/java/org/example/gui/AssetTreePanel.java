@@ -279,9 +279,34 @@ public class AssetTreePanel extends JPanel {
                 if (slash >= 0) rel = rel.substring(slash + 1);
                 result.add(modelsFolder.toPath().resolve(rel).normalize());
             }
+            return;
+        }
+        // If this checked folder node was never expanded, its real children live only in
+        // the FolderNode hierarchy. Collect from there so we don't miss anything.
+        FolderNode pending = pendingNodes.get(cbNode);
+        if (pending != null) {
+            if (cbNode.isChecked()) {
+                TreeNodeData data = (TreeNodeData) cbNode.getUserObject();
+                collectCheckedFromFolderNode(pending, data.relativePath(), result);
+            }
+            return;
         }
         for (int i = 0; i < treeNode.getChildCount(); i++) {
             collectChecked(treeNode.getChildAt(i), result);
+        }
+    }
+
+    private void collectCheckedFromFolderNode(FolderNode fn, String currentPath, Set<Path> result) {
+        if (fn.isFile()) {
+            if (modelsFolder == null) return;
+            String rel = currentPath;
+            int slash = rel.indexOf('/');
+            if (slash >= 0) rel = rel.substring(slash + 1);
+            result.add(modelsFolder.toPath().resolve(rel).normalize());
+            return;
+        }
+        for (FolderNode child : fn.getChildren().values()) {
+            collectCheckedFromFolderNode(child, currentPath + "/" + child.getName(), result);
         }
     }
 
@@ -320,17 +345,36 @@ public class AssetTreePanel extends JPanel {
             TreeNodeData data = (TreeNodeData) cbNode.getUserObject();
             if (data.isFile()) {
                 String rel = data.relativePath();
-                // Strip the leading category prefix (e.g. "MDX Files/" or "BLP Files/")
                 int slash = rel.indexOf('/');
                 if (slash >= 0) rel = rel.substring(slash + 1);
-                // Only include MDX files
-                if (rel.toLowerCase().endsWith(".mdx")) {
-                    result.add(rel);
-                }
+                if (rel.toLowerCase().endsWith(".mdx")) result.add(rel);
             }
+            return;
+        }
+        // Pending folder node: collect from FolderNode hierarchy directly.
+        FolderNode pending = pendingNodes.get(cbNode);
+        if (pending != null) {
+            if (cbNode.isChecked()) {
+                TreeNodeData data = (TreeNodeData) cbNode.getUserObject();
+                collectMdxFromFolderNode(pending, data.relativePath(), result);
+            }
+            return;
         }
         for (int i = 0; i < treeNode.getChildCount(); i++) {
             collectMdxFilenamesRecursive(treeNode.getChildAt(i), result);
+        }
+    }
+
+    private void collectMdxFromFolderNode(FolderNode fn, String currentPath, List<String> result) {
+        if (fn.isFile()) {
+            String rel = currentPath;
+            int slash = rel.indexOf('/');
+            if (slash >= 0) rel = rel.substring(slash + 1);
+            if (rel.toLowerCase().endsWith(".mdx")) result.add(rel);
+            return;
+        }
+        for (FolderNode child : fn.getChildren().values()) {
+            collectMdxFromFolderNode(child, currentPath + "/" + child.getName(), result);
         }
     }
 
@@ -345,7 +389,18 @@ public class AssetTreePanel extends JPanel {
                 Object last = event.getPath().getLastPathComponent();
                 if (!(last instanceof JCheckBoxTreeNode parent)) return;
                 FolderNode fn = pendingNodes.remove(parent);
-                if (fn != null) materializeChildren(parent, fn);
+                if (fn != null) {
+                    materializeChildren(parent, fn);
+                    // If the parent was checked before expansion, propagate that state to the
+                    // newly materialized children so they visually reflect the parent's check.
+                    if (parent.isChecked()) {
+                        for (int i = 0; i < parent.getChildCount(); i++) {
+                            TreePath childPath = event.getPath()
+                                    .pathByAddingChild(parent.getChildAt(i));
+                            assetTree.checkSubTree(childPath, true);
+                        }
+                    }
+                }
             }
             @Override
             public void treeWillCollapse(TreeExpansionEvent event) {}

@@ -197,7 +197,7 @@ public class ImportService {
         Path baseFolderPath = rootFolder.toPath().toAbsolutePath().normalize();
         HashMap<String, File> insertedTextures = new HashMap<>();
 
-        // Build a lookup from model base name (lowercase) -> BTN icon filename.
+        // Build a lookup from model base name (lowercase) -> full MPQ path of the BTN icon.
         // Icons are texture files whose name starts with "BTN"; the rest of the name (minus extension)
         // is matched against the MDX filename (minus extension).
         Map<String, String> iconByModelName = new HashMap<>();
@@ -207,7 +207,8 @@ public class ImportService {
                 if (name.toLowerCase().startsWith("btn") && isTextureFile(name)) {
                     int dot = name.lastIndexOf('.');
                     String key = name.substring(3, dot).toLowerCase();
-                    iconByModelName.put(key, name); // textures are stored flat, so just the filename
+                    // Store the full MPQ path so uico points to where the icon actually lives
+                    iconByModelName.put(key, resolveInsertedPath(name, null, options));
                 }
             }
         }
@@ -246,16 +247,11 @@ public class ImportService {
                 percentCallback.accept(Math.min(pct, 99)); // 100 is reserved for full success
             }
 
-            String insertedFilePath = filePath.toString();
+            String insertedFilePath = resolveInsertedPath(f.getName(), filePath.toString(), options);
 
             if (insertedTextures.containsKey(f.getName())) {
                 log.accept("Skipping already inserted texture: " + filePath);
                 continue;
-            }
-
-            // Texture files are inserted by filename only (flat namespace in WC3)
-            if (isTextureFile(f.getName())) {
-                insertedFilePath = f.getName();
             }
 
             if (!existingImpPaths.contains(insertedFilePath)) {
@@ -274,7 +270,7 @@ public class ImportService {
 
             // MDX files get a unit definition and a placed instance
             if (f.getName().toLowerCase().endsWith(".mdx") && options.getCreateUnits()) {
-                String modelPath = filePath.toString();
+                String modelPath = options.getFlattenPaths() ? f.getName() : filePath.toString();
                 if (existingModelPaths.contains(modelPath)) {
                     log.accept("Unit already defined for model: " + modelPath + ", skipping.");
                 } else {
@@ -367,6 +363,37 @@ public class ImportService {
     private static boolean isTextureFile(String filename) {
         int dot = filename.lastIndexOf('.');
         return dot >= 0 && TEXTURE_EXTENSIONS.contains(filename.substring(dot).toLowerCase());
+    }
+
+    /**
+     * Resolves the in-MPQ path for a file being imported.
+     *
+     * <ul>
+     *   <li>BTN* textures  → {@code ReplaceableTextures\CommandButtons\<filename>}</li>
+     *   <li>DISBTN* textures → {@code ReplaceableTextures\CommandButtonsDisabled\<filename>}</li>
+     *   <li>Other textures  → flat namespace ({@code <filename>} only)</li>
+     *   <li>Non-textures with flattenPaths → {@code <filename>} only</li>
+     *   <li>Non-textures otherwise → {@code relativePath} (folder structure preserved)</li>
+     * </ul>
+     *
+     * @param filename     file name only (e.g. {@code BTNMyUnit.blp})
+     * @param relativePath relative path from the assets root (used for non-texture files);
+     *                     may be {@code null} when only the icon path is needed
+     * @param options      current import options
+     */
+    private static String resolveInsertedPath(String filename, String relativePath,
+                                               ImportOptions options) {
+        if (isTextureFile(filename)) {
+            String lower = filename.toLowerCase();
+            if (lower.startsWith("disbtn")) {
+                return "ReplaceableTextures\\CommandButtonsDisabled\\" + filename;
+            }
+            if (lower.startsWith("btn")) {
+                return "ReplaceableTextures\\CommandButtons\\" + filename;
+            }
+            return filename; // other textures: flat namespace
+        }
+        return (options.getFlattenPaths() || relativePath == null) ? filename : relativePath;
     }
 
     private byte[] serializeDooUnits(DOO_UNITS obj) throws Exception {

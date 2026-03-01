@@ -46,6 +46,9 @@ public class ImportConfigPanel extends JPanel {
     private final JCheckBox clearAssetsBox;
     private final JSpinner unitScalingSpinner;
 
+    // ---- General import options ----
+    private final JCheckBox flattenPathsBox;
+
     // ---- Unit naming fields ----
     private final JCheckBox autoNameUnitsBox;
     private final JComboBox<String> nameFormatCombo;
@@ -82,6 +85,7 @@ public class ImportConfigPanel extends JPanel {
         placeUnitsBox = new JCheckBox();
         clearUnitsBox = new JCheckBox();
         clearAssetsBox = new JCheckBox();
+        flattenPathsBox = new JCheckBox("Keep filename only (no subfolder path)");
         unitScalingSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.1, 10.0, 0.1));
 
         // ---- Unit naming fields ----
@@ -226,6 +230,9 @@ public class ImportConfigPanel extends JPanel {
         cc.gridy = row++;
         clearAssetsBox.setText(Messages.get("checkbox.clearAssets"));
         p.add(clearAssetsBox, cc);
+
+        cc.gridy = row++;
+        p.add(flattenPathsBox, cc);
 
         addRow(p, lc, fc, row++, "Unit Scaling:", unitScalingSpinner);
 
@@ -545,6 +552,10 @@ public class ImportConfigPanel extends JPanel {
 
     public boolean isAutoAssignIconEnabled() {
         return autoAssignIconBox.isSelected();
+    }
+
+    public boolean isFlattenPathsEnabled() {
+        return flattenPathsBox.isSelected();
     }
 
     /**
