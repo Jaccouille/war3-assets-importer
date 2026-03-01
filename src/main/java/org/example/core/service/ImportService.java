@@ -277,8 +277,10 @@ public class ImportService {
             mpq.insertFile(insertedFilePath, f, false);
             insertedTextures.put(f.getName(), f);
 
-            // MDX files get a unit definition and a placed instance
-            if (f.getName().toLowerCase().endsWith(".mdx") && options.getCreateUnits()) {
+            // MDX files get a unit definition and a placed instance.
+            // Portrait files (_Portrait.mdx) are skipped — they have no in-game unit.
+            boolean isPortrait = f.getName().toLowerCase().endsWith("_portrait.mdx");
+            if (f.getName().toLowerCase().endsWith(".mdx") && !isPortrait && options.getCreateUnits()) {
                 String modelPath = options.getFlattenPaths() ? f.getName() : filePath.toString();
                 if (existingModelPaths.contains(modelPath)) {
                     log.accept("Unit already defined for model: " + modelPath + ", skipping.");

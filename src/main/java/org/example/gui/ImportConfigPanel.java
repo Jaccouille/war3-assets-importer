@@ -527,7 +527,15 @@ public class ImportConfigPanel extends JPanel {
      */
     public void setSelectedMdxFilenames(java.util.List<String> filenames) {
         this.selectedMdxFilenames = filenames != null ? filenames : java.util.Collections.emptyList();
-        mapPreviewPanel.setTotalUnits(this.selectedMdxFilenames.size());
+        long unitCount = this.selectedMdxFilenames.stream()
+                .filter(f -> !isPortraitMdx(f))
+                .count();
+        mapPreviewPanel.setTotalUnits((int) unitCount);
+    }
+
+    /** Returns true for portrait MDX files (e.g. {@code Footman_Portrait.mdx}). */
+    static boolean isPortraitMdx(String filepath) {
+        return filepath.toLowerCase().endsWith("_portrait.mdx");
     }
 
     // ---- Unit Creation Getters ----
