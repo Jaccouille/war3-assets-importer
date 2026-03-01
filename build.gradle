@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'org.example'
@@ -41,6 +42,15 @@ dependencies {
 
     // DDS support for ImageIO
     implementation 'net.nikr:dds:1.0.0'
+}
+
+shadowJar {
+    archiveBaseName = 'War3AssetsImporter'
+    archiveClassifier = ''
+    archiveVersion = ''
+    manifest {
+        attributes 'Main-Class': 'org.example.Main'
+    }
 }
 
 test {
