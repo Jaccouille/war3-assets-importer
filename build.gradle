@@ -49,7 +49,7 @@ shadowJar {
     archiveClassifier = ''
     archiveVersion = ''
     manifest {
-        attributes 'Main-Class': 'org.example.Main'
+        attributes 'Main-Class': 'com.hiveworkshop.Main'
     }
 }
 
@@ -61,4 +61,10 @@ test {
 // characters when building on a Windows system whose default charset is not UTF-8)
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+// Preserve UTF-8 characters in .properties files (prevents Gradle from
+// re-encoding accented characters to \uXXXX escapes during resource copy)
+tasks.withType(ProcessResources).configureEach {
+    filteringCharset = 'UTF-8'
 }
