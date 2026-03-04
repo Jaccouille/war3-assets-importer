@@ -328,8 +328,8 @@ public class MapPreviewPanel extends JPanel {
         double rad = Math.toRadians(unitAngle);
 
         // Tip: forward — distance 14 px for good visibility at typical zoom levels
-        int tipX = x + (int) (14 * Math.cos(rad));
-        int tipY = y - (int) (14 * Math.sin(rad));   // negate for screen Y
+        int tipX = x + (int) (8 * Math.cos(rad));
+        int tipY = y - (int) (8 * Math.sin(rad));   // negate for screen Y
 
         // Wings: 140° back from the forward direction (was 150°) → wider arrowhead
         double leftRad = rad + Math.toRadians(140);
@@ -360,8 +360,8 @@ public class MapPreviewPanel extends JPanel {
     private void paintExistingUnitTriangle(Graphics2D g, int x, int y, double angleDeg) {
         double rad = Math.toRadians(angleDeg);
 
-        int tipX = x + (int) (14 * Math.cos(rad));
-        int tipY = y - (int) (14 * Math.sin(rad));   // negate for screen Y
+        int tipX = x + (int) (8 * Math.cos(rad));
+        int tipY = y - (int) (8 * Math.sin(rad));   // negate for screen Y
 
         double leftRad = rad + Math.toRadians(140);
         double rightRad = rad - Math.toRadians(140);
