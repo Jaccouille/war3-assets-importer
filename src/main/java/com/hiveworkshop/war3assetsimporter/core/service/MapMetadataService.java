@@ -17,6 +17,8 @@ import systems.crigges.jmpq3.MPQOpenOption;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,8 @@ import java.util.logging.Logger;
 public class MapMetadataService {
 
     private static final Logger LOG = Logger.getLogger(MapMetadataService.class.getName());
+    private static final int DOO_UNITS_HEADER_SIZE = 16;
+    private static final int MIN_DOO_UNITS_SUBVERSION = 11;
 
     /**
      * Resolves a value from a W3I field that may be either:
@@ -76,6 +80,12 @@ public class MapMetadataService {
 
         // 3. Not a TRIGSTR reference — it is the literal string value
         return raw.trim();
+    }
+
+    private static int readUInt32LE(byte[] bytes, int offset) {
+        return ByteBuffer.wrap(bytes, offset, Integer.BYTES)
+                .order(ByteOrder.LITTLE_ENDIAN)
+                .getInt();
     }
 
     /**
@@ -142,6 +152,41 @@ public class MapMetadataService {
             LOG.fine("Metadata loaded — name='" + name + "' author='" + author + "' gameVersion=" + gameVersion);
             return new MapMetadata(name, author, gameVersion, editorVersion, desc, previewBytes, bounds);
         }
+    }
+
+    /**
+     * Validates war3mapUnits.doo header and rejects unsupported subversions.
+     * This is intended to run at map-open time so the user gets immediate feedback.
+     */
+    public void validateDooUnitsSubversion(File mapFile) throws Exception {
+        return; // Disable validation for now since some maps in the wild have very old DOO formats that we don't want to reject outright.  See
+//        try (JMpqEditor mpq = new JMpqEditor(mapFile, MPQOpenOption.FORCE_V0)) {
+//            if (!mpq.hasFile(DOO_UNITS.GAME_PATH.getName())) return;
+//
+//            byte[] dooBytes = mpq.extractFileAsBytes(DOO_UNITS.GAME_PATH.getName());
+//            if (dooBytes == null || dooBytes.length < DOO_UNITS_HEADER_SIZE) {
+//                throw new IllegalArgumentException("war3mapUnits.doo is too short to contain a valid header.");
+//            }
+//
+//            String magic = new String(dooBytes, 0, 4, StandardCharsets.US_ASCII);
+//            if (!"W3do".equals(magic)) {
+//                throw new IllegalArgumentException("Invalid war3mapUnits.doo header magic: " + magic);
+//            }
+//
+//            int version = readUInt32LE(dooBytes, 4);
+//            int subversion = readUInt32LE(dooBytes, 8);
+//            int objectCount = readUInt32LE(dooBytes, 12);
+//            LOG.fine("war3mapUnits.doo header: magic=" + magic
+//                    + ", version=" + version
+//                    + ", subversion=" + subversion
+//                    + ", objectCount=" + objectCount);
+//
+//            if (subversion < MIN_DOO_UNITS_SUBVERSION) {
+//                throw new IllegalArgumentException("Unsupported war3mapUnits.doo subversion: "
+//                        + subversion + " (minimum supported: " + MIN_DOO_UNITS_SUBVERSION + ")."+
+//                        "\nTry to place an item on the map and save it with the latest World Editor to update the DOO format.");
+//            }
+//        }
     }
 
     // -------------------------------------------------------------------------

@@ -12,11 +12,12 @@ import com.hiveworkshop.war3assetsimporter.gui.settings.SettingsDialog;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -150,6 +151,12 @@ public class MainFrame {
     // Button handlers
     // -------------------------------------------------------------------------
 
+    private static boolean isWarcraftMapFile(File file) {
+        if (!file.isFile()) return false;
+        String lowerName = file.getName().toLowerCase();
+        return lowerName.endsWith(".w3x") || lowerName.endsWith(".w3m");
+    }
+
     private void initialize() {
         frame = new JFrame(AppInfo.APP_NAME + " v" + AppInfo.VERSION);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -238,8 +245,20 @@ public class MainFrame {
         frame.setVisible(true);
     }
 
+    // -------------------------------------------------------------------------
+    // Asset preview
+    // -------------------------------------------------------------------------
+
     private void onOpenMap(ActionEvent e) {
         JFileChooser chooser = new JFileChooser(lastMapDir);
+        FileNameExtensionFilter warcraftMapFilter =
+                new FileNameExtensionFilter(
+                        "Warcraft III Maps (*.w3x, *.w3m)",
+                        "w3x",
+                        "w3m"
+                );
+        chooser.setFileFilter(warcraftMapFilter);
+        chooser.setAcceptAllFileFilterUsed(false);
         chooser.setDialogTitle(Messages.get("dialog.openMap"));
         if (chooser.showOpenDialog(frame) != JFileChooser.APPROVE_OPTION) return;
         File selectedMap = chooser.getSelectedFile();
@@ -322,10 +341,6 @@ public class MainFrame {
             log("Found " + existingUnits.size() + " existing unit placement(s) on map.");
         }
     }
-
-    // -------------------------------------------------------------------------
-    // Asset preview
-    // -------------------------------------------------------------------------
 
     private void onImportModels(ActionEvent e) {
         JFileChooser chooser = new JFileChooser(lastModelsDir);
@@ -427,12 +442,6 @@ public class MainFrame {
         }
     }
 
-    private static boolean isWarcraftMapFile(File file) {
-        if (!file.isFile()) return false;
-        String lowerName = file.getName().toLowerCase();
-        return lowerName.endsWith(".w3x") || lowerName.endsWith(".w3m");
-    }
-
     private void openMapFile(File selectedMapFile) {
         mapFile = selectedMapFile;
         lastMapDir = mapFile.getParentFile();
@@ -441,6 +450,7 @@ public class MainFrame {
         importConfigPanel.setOutputPath(defaultOutputPath(mapFile));
 
         try {
+            metadataService.validateDooUnitsSubversion(mapFile);
             MapMetadata meta = metadataService.loadMetadata(mapFile);
             LOG.fine("Metadata loaded - name='" + meta.name() + "' warning=" + meta.loadWarning());
 
