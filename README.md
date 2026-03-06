@@ -46,7 +46,7 @@ No installation needed.
 
 ## Building from Source
 
-Requires JDK 17+ (the project uses a Java 17 toolchain).  
+Requires JDK 17+ (the project uses a Java 17 toolchain).
 The Gradle wrapper is included, so no global Gradle installation is required.
 
 ```bash
@@ -54,18 +54,31 @@ The Gradle wrapper is included, so no global Gradle installation is required.
 git clone https://github.com/YOUR_USERNAME/War3AssetsImporter.git
 cd War3AssetsImporter
 
-# Build
+# Build and run tests
 ./gradlew clean build
 
-# Or run directly
+# Run the app from source
 ./gradlew run
 
-# Build the standalone JAR used in releases
+# Build the standalone JAR
 ./gradlew shadowJar
 # Output: build/libs/War3AssetsImporter.jar
 ```
 
-On Windows use `gradlew.bat` instead of `./gradlew`.
+On Windows, use `gradlew.bat` instead of `./gradlew`.
+
+### Build Windows `.exe` (portable app-image)
+
+```powershell
+.\gradlew.bat clean jpackageTask
+```
+
+Output:
+- `build\dist\War3AssetsImporter\War3AssetsImporter.exe`
+
+Notes:
+- `jpackageTask` depends on `shadowJar` and `jlinkTask`, so it builds everything needed.
+- This produces a portable app-image directory (not an MSI installer).
 
 ## Deploying a New Version
 
