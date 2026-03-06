@@ -20,16 +20,6 @@ Open an issue describing the feature and the use case behind it.
 3. Verify the project builds: `./gradlew build`
 4. Open a pull request with a short description of what changed and why
 
-## Dev Setup
-
-```bash
-git clone https://github.com/YOUR_USERNAME/War3AssetsImporter.git
-cd War3AssetsImporter
-./gradlew run
-```
-
-The project uses Gradle 7.5.1 and targets Java 11+. An IDE like IntelliJ IDEA will pick up the Gradle project automatically.
-
 ## Adding a Language
 
 The UI uses Java `ResourceBundle` for i18n. All strings live in property files under `src/main/resources/`.
