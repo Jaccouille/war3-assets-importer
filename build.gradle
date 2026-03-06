@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.hiveworkshop'
-version '0.0.1'
+version '1.0.0'
 
 // Use Java toolchain so Gradle auto-detects (or downloads) the correct JDK
 // on any OS — no need for org.gradle.java.home in gradle.properties.
