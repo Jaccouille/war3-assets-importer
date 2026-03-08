@@ -31,9 +31,10 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
-    // wc3libs: resolved from JitPack in CI; substituted by the local composite
-    // build (../wc3libs) when that directory exists — see settings.gradle.
-    implementation 'com.github.inwc3:wc3libs:01fb9e23bf'
+    // wc3libs: resolved from JitPack in CI using Jaccouille's fork (doo-units-subversion-9
+    // branch); substituted by the local composite build (../wc3libs) when that directory
+    // exists — see settings.gradle.
+    implementation 'com.github.Jaccouille:wc3libs:doo-units-subversion-9-SNAPSHOT'
 //    implementation "com.github.DrSuperGood:blp-iio-plugin:master"
     implementation files('libs/blp-iio-plugin.jar')
     // Water's wc3 libs
