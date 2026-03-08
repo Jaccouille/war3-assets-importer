@@ -44,6 +44,7 @@ public class ImportConfigPanel extends JPanel {
     private final JCheckBox placeUnitsBox;
     private final JCheckBox clearUnitsBox;
     private final JCheckBox clearAssetsBox;
+    private final JCheckBox createAlternateUnitsBox;
     private final JSpinner unitScalingSpinner;
 
     // ---- General import options ----
@@ -101,6 +102,7 @@ public class ImportConfigPanel extends JPanel {
         placeUnitsBox = new JCheckBox();
         clearUnitsBox = new JCheckBox();
         clearAssetsBox = new JCheckBox();
+        createAlternateUnitsBox = new JCheckBox();
         flattenPathsBox = new JCheckBox(Messages.get("checkbox.flattenPaths"));
         unitScalingSpinner = new JSpinner(new SpinnerNumberModel(1.0, 0.1, 10.0, 0.1));
 
@@ -120,6 +122,7 @@ public class ImportConfigPanel extends JPanel {
         placeUnitsBox.setToolTipText(Messages.get("tooltip.placeUnits"));
         clearUnitsBox.setToolTipText(Messages.get("tooltip.clearUnits"));
         clearAssetsBox.setToolTipText(Messages.get("tooltip.clearAssets"));
+        createAlternateUnitsBox.setToolTipText(Messages.get("tooltip.createAlternateUnits"));
         flattenPathsBox.setToolTipText(Messages.get("tooltip.flattenPaths"));
         unitScalingSpinner.setToolTipText(Messages.get("tooltip.unitScaling"));
         unitOriginField.setToolTipText(Messages.get("tooltip.unitOriginId"));
@@ -157,11 +160,15 @@ public class ImportConfigPanel extends JPanel {
         split.setResizeWeight(0.0);
         add(split, BorderLayout.CENTER);
 
+        // Default state for alternate units checkbox
+        createAlternateUnitsBox.setSelected(true);
+
         // Attach listeners and do initial sync
         unitAngleSpinner.addChangeListener(e -> syncConfig());
         unitSpacingXSpinner.addChangeListener(e -> syncConfig());
         unitSpacingYSpinner.addChangeListener(e -> syncConfig());
         placingOrderCombo.addActionListener(e -> syncConfig());
+        createAlternateUnitsBox.addActionListener(e -> refreshTotalUnits());
         syncConfig();
 
         // Populate all i18n labels for the initial locale
@@ -273,6 +280,10 @@ public class ImportConfigPanel extends JPanel {
         cc.gridy = row++;
         clearAssetsBox.setText(Messages.get("checkbox.clearAssets"));
         p.add(clearAssetsBox, cc);
+
+        cc.gridy = row++;
+        createAlternateUnitsBox.setText(Messages.get("checkbox.createAlternateUnits"));
+        p.add(createAlternateUnitsBox, cc);
 
         cc.gridy = row++;
         p.add(flattenPathsBox, cc);
@@ -550,9 +561,10 @@ public class ImportConfigPanel extends JPanel {
      */
     private void refreshTotalUnits() {
         int total = 0;
+        boolean includeAlts = createAlternateUnitsBox.isSelected();
         for (String f : selectedMdxFilenames) {
             if (isPortraitMdx(f)) continue;
-            java.util.List<String> alts = mdxAlternateAnims.get(f);
+            java.util.List<String> alts = includeAlts ? mdxAlternateAnims.get(f) : null;
             total += 1 + (alts != null ? alts.size() : 0);
         }
         mapPreviewPanel.setTotalUnits(total);
@@ -561,6 +573,10 @@ public class ImportConfigPanel extends JPanel {
     // ---- Unit Creation Getters ----
     public boolean isCreateUnitsSelected() {
         return createUnitsBox.isSelected();
+    }
+
+    public boolean isCreateAlternateUnitsEnabled() {
+        return createAlternateUnitsBox.isSelected();
     }
 
     public boolean isPlaceUnitsSelected() {
@@ -695,6 +711,7 @@ public class ImportConfigPanel extends JPanel {
         placeUnitsBox.setText(Messages.get("checkbox.placeUnits"));
         clearUnitsBox.setText(Messages.get("checkbox.clearUnits"));
         clearAssetsBox.setText(Messages.get("checkbox.clearAssets"));
+        createAlternateUnitsBox.setText(Messages.get("checkbox.createAlternateUnits"));
         flattenPathsBox.setText(Messages.get("checkbox.flattenPaths"));
         autoNameUnitsBox.setText(Messages.get("checkbox.autoNameUnits"));
         autoAssignIconBox.setText(Messages.get("checkbox.autoAssignIcon"));
@@ -723,6 +740,7 @@ public class ImportConfigPanel extends JPanel {
         placeUnitsBox.setToolTipText(Messages.get("tooltip.placeUnits"));
         clearUnitsBox.setToolTipText(Messages.get("tooltip.clearUnits"));
         clearAssetsBox.setToolTipText(Messages.get("tooltip.clearAssets"));
+        createAlternateUnitsBox.setToolTipText(Messages.get("tooltip.createAlternateUnits"));
         flattenPathsBox.setToolTipText(Messages.get("tooltip.flattenPaths"));
         unitScalingSpinner.setToolTipText(Messages.get("tooltip.unitScaling"));
         unitOriginField.setToolTipText(Messages.get("tooltip.unitOriginId"));

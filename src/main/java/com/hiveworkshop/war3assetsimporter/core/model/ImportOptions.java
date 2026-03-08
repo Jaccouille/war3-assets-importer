@@ -18,6 +18,11 @@ public final class ImportOptions {
      * When true, assets are stored in the MPQ under their filename only (no subfolder path).
      */
     private final boolean flattenPaths;
+    /**
+     * When true, additional unit definitions are created for each alternate/upgrade animation
+     * sequence detected in the MDX file (e.g. "Stand Alternate" → uani=alternate).
+     */
+    private final boolean createAlternateUnits;
     private final PlacingOrder placingOrder;
     /**
      * Optional drawn-shape bounds in world space; {@code null} = fall back to camera bounds.
@@ -25,7 +30,7 @@ public final class ImportOptions {
     private final PlacementBounds placementBounds;
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
                          boolean clearAssets, String unitOriginId) {
-        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", false, false, PlacingOrder.ROWS, null);
+        this(createUnits, placeUnits, clearUnits, clearAssets, 1.0, 270, 64.0, 64.0, unitOriginId, false, "Space Separated", false, false, PlacingOrder.ROWS, null, true);
     }
     public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
                          boolean clearAssets, double unitScaling,
@@ -35,6 +40,18 @@ public final class ImportOptions {
                          boolean autoAssignIcon, boolean flattenPaths,
                          PlacingOrder placingOrder,
                          PlacementBounds placementBounds) {
+        this(createUnits, placeUnits, clearUnits, clearAssets, unitScaling, unitAngle, unitSpacingX, unitSpacingY,
+                unitOriginId, autoNameUnits, nameFormat, autoAssignIcon, flattenPaths, placingOrder, placementBounds, true);
+    }
+    public ImportOptions(boolean createUnits, boolean placeUnits, boolean clearUnits,
+                         boolean clearAssets, double unitScaling,
+                         float unitAngle, double unitSpacingX, double unitSpacingY,
+                         String unitOriginId,
+                         boolean autoNameUnits, String nameFormat,
+                         boolean autoAssignIcon, boolean flattenPaths,
+                         PlacingOrder placingOrder,
+                         PlacementBounds placementBounds,
+                         boolean createAlternateUnits) {
         this.createUnits = createUnits;
         this.placeUnits = placeUnits;
         this.clearUnits = clearUnits;
@@ -50,6 +67,7 @@ public final class ImportOptions {
         this.flattenPaths = flattenPaths;
         this.placingOrder = placingOrder;
         this.placementBounds = placementBounds;
+        this.createAlternateUnits = createAlternateUnits;
     }
 
     public static ImportOptions defaults() {
@@ -110,6 +128,10 @@ public final class ImportOptions {
 
     public PlacingOrder getPlacingOrder() {
         return placingOrder;
+    }
+
+    public boolean getCreateAlternateUnits() {
+        return createAlternateUnits;
     }
 
     /**

@@ -599,7 +599,8 @@ public class MainFrame {
                 importConfigPanel.isAutoAssignIconEnabled(),
                 importConfigPanel.isFlattenPathsEnabled(),
                 placingOrder,
-                importConfigPanel.getPlacementBounds()  // null when no shape drawn → camera-bounds fallback
+                importConfigPanel.getPlacementBounds(),  // null when no shape drawn → camera-bounds fallback
+                importConfigPanel.isCreateAlternateUnitsEnabled()
         );
 
         // Resolve the output file path

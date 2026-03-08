@@ -472,7 +472,8 @@ public class ImportService {
                     // ---- Alternate-animation unit definitions ----
                     // Scan the MDX file for alternate/upgrade animation sequences and create
                     // one additional unit definition per detected keyword, with uani set.
-                    List<String> alternateAnims = MdxAnimationScanner.scan(f);
+                    List<String> alternateAnims = options.getCreateAlternateUnits()
+                            ? MdxAnimationScanner.scan(f) : List.of();
                     for (String keyword : alternateAnims) {
                         String uaniValue = ALTERNATE_ANIM_UANI.get(keyword);
                         if (uaniValue == null) continue;

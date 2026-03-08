@@ -53,6 +53,16 @@ Clicking a file node previews the asset on the right.</p>
         the new selection. Use this to replace an old import without leaving stale files.</td>
   </tr>
   <tr valign='top'>
+    <td width='160' style='font-weight:bold;white-space:nowrap'>Create alternate animation units</td>
+    <td>When checked, additional unit definitions are created for each alternate or upgrade animation
+        sequence detected in the MDX file.
+        For example, a sequence named <i>Stand Alternate</i> produces a second unit definition
+        with <code>uani=alternate</code>; <i>Stand Upgrade First</i> produces one with
+        <code>uani=upgrade,first</code>.
+        Each extra unit occupies its own grid position in the placement area.
+        The detected keywords are shown in the Assets tree next to the filename.</td>
+  </tr>
+  <tr valign='top'>
     <td width='160' style='font-weight:bold;white-space:nowrap'>Keep filename only</td>
     <td>Store imported assets without their subfolder path
         (e.g. <code>Infantry/soldier.mdx</code> &rarr; <code>soldier.mdx</code>).
