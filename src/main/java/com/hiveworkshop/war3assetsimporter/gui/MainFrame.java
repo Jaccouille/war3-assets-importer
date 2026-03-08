@@ -7,6 +7,7 @@ import com.hiveworkshop.war3assetsimporter.core.service.ImportService;
 import com.hiveworkshop.war3assetsimporter.core.service.MapMetadataService;
 import com.hiveworkshop.war3assetsimporter.gui.i18n.Messages;
 import com.hiveworkshop.war3assetsimporter.gui.settings.AppearanceConfig;
+import com.hiveworkshop.war3assetsimporter.gui.settings.ImportConfig;
 import com.hiveworkshop.war3assetsimporter.gui.settings.SettingsDialog;
 
 import javax.imageio.ImageIO;
@@ -52,6 +53,9 @@ public class MainFrame {
     // ---- Appearance ----
     private final AppearanceConfig appearanceConfig;
 
+    // ---- Import config persistence ----
+    private final ImportConfig importConfig;
+
     // ---- State ----
     private File mapFile;
     private File modelsFolder;
@@ -87,6 +91,8 @@ public class MainFrame {
 
     public MainFrame(AppearanceConfig appearanceConfig) {
         this.appearanceConfig = appearanceConfig;
+        this.importConfig = new ImportConfig();
+        importConfig.load();
         checkBlpSupport();
         initialize();
     }
@@ -241,6 +247,20 @@ public class MainFrame {
         processButton.addActionListener(this::onProcess);
         settingsButton.addActionListener(this::onOpenSettings);
         helpButton.addActionListener(e -> new HelpDialog(frame).setVisible(true));
+
+        // Load persisted import configuration into the panel
+        importConfigPanel.loadFromConfig(importConfig);
+
+        // Save import configuration on window close
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                importConfigPanel.saveToConfig(importConfig);
+                importConfig.save();
+                System.exit(0);
+            }
+        });
 
         frame.setVisible(true);
     }

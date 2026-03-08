@@ -155,6 +155,18 @@ public class UnitSuggestionField extends JPanel {
         return field.getText().trim();
     }
 
+    /**
+     * Sets the text in the field programmatically without triggering the suggestion filter.
+     */
+    public void setValue(String value) {
+        suppressFilter = true;
+        try {
+            field.setText(value != null ? value : "");
+        } finally {
+            suppressFilter = false;
+        }
+    }
+
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------

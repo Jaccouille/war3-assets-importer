@@ -5,6 +5,7 @@ import com.hiveworkshop.war3assetsimporter.core.model.ImportOptions;
 import com.hiveworkshop.war3assetsimporter.core.model.UnitEntry;
 import com.hiveworkshop.war3assetsimporter.core.util.CameraBounds;
 import com.hiveworkshop.war3assetsimporter.gui.i18n.Messages;
+import com.hiveworkshop.war3assetsimporter.gui.settings.ImportConfig;
 
 import javax.swing.*;
 import java.awt.*;
@@ -696,6 +697,74 @@ public class ImportConfigPanel extends JPanel {
                 Math.max(1f, worldSpacingX),
                 Math.max(1f, worldSpacingY)
         );
+    }
+
+    // -------------------------------------------------------------------------
+    // Config persistence
+    // -------------------------------------------------------------------------
+
+    /**
+     * Applies a previously loaded {@link ImportConfig} to all UI fields.
+     * Call this once after the panel is constructed and the config has been loaded.
+     */
+    public void loadFromConfig(ImportConfig cfg) {
+        createUnitsBox.setSelected(cfg.isCreateUnits());
+        placeUnitsBox.setSelected(cfg.isPlaceUnits());
+        clearUnitsBox.setSelected(cfg.isClearUnits());
+        clearAssetsBox.setSelected(cfg.isClearAssets());
+        createAlternateUnitsBox.setSelected(cfg.isCreateAlternateUnits());
+        flattenPathsBox.setSelected(cfg.isFlattenPaths());
+        unitScalingSpinner.setValue(cfg.getUnitScaling());
+        unitOriginField.setValue(cfg.getUnitOriginId());
+        unitAngleSpinner.setValue(cfg.getUnitAngle());
+        unitSpacingXSpinner.setValue(cfg.getSpacingX());
+        unitSpacingYSpinner.setValue(cfg.getSpacingY());
+        autoNameUnitsBox.setSelected(cfg.isAutoNameUnits());
+        autoAssignIconBox.setSelected(cfg.isAutoAssignIcon());
+
+        // Restore placing order combo
+        String savedOrder = cfg.getPlacingOrder();
+        for (int i = 0; i < placingOrderCombo.getItemCount(); i++) {
+            if (placingOrderCombo.getItemAt(i).name().equals(savedOrder)) {
+                placingOrderCombo.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        // Restore name format combo by formatKey
+        String savedFormat = cfg.getNameFormat();
+        for (int i = 0; i < nameFormatCombo.getItemCount(); i++) {
+            if (nameFormatCombo.getItemAt(i).formatKey().equals(savedFormat)) {
+                nameFormatCombo.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        syncConfig();
+        refreshTotalUnits();
+    }
+
+    /**
+     * Copies the current UI field values into {@code cfg} so it can be saved to disk.
+     */
+    public void saveToConfig(ImportConfig cfg) {
+        cfg.setCreateUnits(createUnitsBox.isSelected());
+        cfg.setPlaceUnits(placeUnitsBox.isSelected());
+        cfg.setClearUnits(clearUnitsBox.isSelected());
+        cfg.setClearAssets(clearAssetsBox.isSelected());
+        cfg.setCreateAlternateUnits(createAlternateUnitsBox.isSelected());
+        cfg.setFlattenPaths(flattenPathsBox.isSelected());
+        cfg.setUnitScaling(((Number) unitScalingSpinner.getValue()).doubleValue());
+        cfg.setUnitOriginId(unitOriginField.getValue());
+        cfg.setUnitAngle(((Number) unitAngleSpinner.getValue()).doubleValue());
+        cfg.setSpacingX(((Number) unitSpacingXSpinner.getValue()).doubleValue());
+        cfg.setSpacingY(((Number) unitSpacingYSpinner.getValue()).doubleValue());
+        MapPreviewPanel.PlacingOrder order = (MapPreviewPanel.PlacingOrder) placingOrderCombo.getSelectedItem();
+        cfg.setPlacingOrder(order != null ? order.name() : "ROWS");
+        cfg.setAutoNameUnits(autoNameUnitsBox.isSelected());
+        cfg.setAutoAssignIcon(autoAssignIconBox.isSelected());
+        NameFormatItem fmt = (NameFormatItem) nameFormatCombo.getSelectedItem();
+        cfg.setNameFormat(fmt != null ? fmt.formatKey() : "Space Separated (keep case)");
     }
 
     // -------------------------------------------------------------------------
